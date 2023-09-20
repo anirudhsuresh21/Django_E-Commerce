@@ -1,0 +1,246 @@
+{% load static %}
+<!Doctype HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Window</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+{% comment %} <!-- <link rel="stylesheet" href= {% '1.css' %} >  --> {% endcomment %}
+{% comment %} <link href="{% static '/assets/vendor/bootstrap/css/bootstrap.min.css ' %}" rel="stylesheet">
+<link href="{% static '/assets/vendor/bootstrap-icons/bootstrap-icons.css ' %}" rel="stylesheet">
+<link href="{% static '/assets/vendor/boxicons/css/boxicons.min.css ' %}" rel="stylesheet">
+<link href="{% static '/assets/vendor/glightbox/css/glightbox.min.css ' %}" rel="stylesheet">
+<link href="{% static '/assets/vendor/remixicon/remixicon.css ' %}" rel="stylesheet">
+<link href="{% static '/assets/vendor/swiper/swiper-bundle.min.css ' %}" rel="stylesheet"> {% endcomment %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    body{
+        background: #f5f5f5
+    }
+    .rounded{
+        border-radius: 1rem
+    }
+    .nav-pills .nav-link{
+        color: #555
+    }
+    .nav-pills .nav-link.active{
+        color: white
+    }    
+    input[type="radio"]{
+        margin-right: 5px
+    }
+    .bold{
+        font-weight:bol
+    }
+</style>
+</head>
+<body>
+    <div class="container py-5">
+        <!-- For demo purpose -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mx-auto text-center">
+                <h3 class="display-6">Integrated Payment Gateway</h3>
+                {% for message in messages %}
+
+                <div class="alert alert-{{message.tags}} alert-dismissible fade show" id="msg" role="alert">
+                    <strong>{{message}}</strong>
+                    {% comment %} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> {% endcomment %}
+                </div>
+                {% endfor %}
+            </div>
+        </div> <!-- End -->
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="card ">
+                    <div class="card-header">
+                        <div class="bg-white shadow-sm pt-4 pl-2 pr-2 pb-2">
+                            <!-- Credit card form tabs -->
+                            <ul role="tablist" class="nav bg-light nav-pills rounded nav-fill mb-3">
+                                <li class="nav-item"> <a data-toggle="pill" href="#credit-card" class="nav-link active "> <i class="fas fa-credit-card mr-2"></i> Credit Card </a> </li>
+                                <li class="nav-item"> <a data-toggle="pill" href="#paypal" class="nav-link "> <i class="fa-brands fa-google-pay mr-1"></i> Google Pay </a> </li>
+                                <li class="nav-item"> <a data-toggle="pill" href="#net-banking" class="nav-link "> <i class="fas fa-mobile-alt mr-2"></i> Net Banking </a> </li>
+                            </ul>
+                        </div>
+                        <br> <!-- End -->
+                         <div class="card bg-primary mt-2 mb-2">
+                            <h5>Transaction for Rs.{{dict1.TXN_AMOUNT}} of Order id {{dict1.ORDER_ID}}</h5>
+                            </div> 
+                        <!-- Credit card form content -->
+                        <div class="tab-content">
+                            <!-- credit card info-->
+                            <div id="credit-card" class="tab-pane fade show active pt-3">
+                                <form role="form" action="/payment-stage/" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value={{dict1.ORDER_ID}}>
+                                    <input type="hidden" name="amt" value={{dict1.TXN_AMOUNT}}>
+                                    {% comment %} <input type="hidden" name="my_list[]" value="item3"> {% endcomment %}
+                                     {% comment %} <div class="card bg-primary mt-2 mb-2">
+                                    <h5>Transaction for Rs.{{dict.TXN_AMOUNT}} of Order id {{dict.ORDER_ID}}</h5>
+                                    </div>  {% endcomment %}
+                                
+                                    <h2>
+                                    <div class="form-group"> <label for="username">
+                                            <h6>Card Owner</h6> 
+                                        </label> <input type="text" name="username" placeholder="Card Owner Name (BLOCK LETTERS)" required class="form-control "> </div>
+                                    <div class="form-group"> <label for="cardNumber">
+                                            <h6>Card number</h6>
+                                        </label>
+                                        <div class="input-group"> <input  type="text" inputmode="numeric" id="cardNumber" name="cardNumber" placeholder="Valid card number" maxlength="19" class="form-control " required>
+                                            <div class="input-group-append"> <span class="input-group-text text-muted"> <i class="fab fa-cc-visa mx-1"></i> <i class="fab fa-cc-mastercard mx-1"></i> <i class="fab fa-cc-amex mx-1"></i> </span> </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <div class="form-group"> <label><span class="hidden-xs">
+                                                        <h6>Expiration Date</h6>
+                                                    </span></label>
+                                                <div class="input-group"> <select placeholder="MM" name="" class="form-control" required> 
+                                                    <option value="" selected disabled>--Month--</option>
+                                                            <option>01</option>
+                                                            <option>02</option>
+                                                            <option>03</option>
+                                                            <option>04</option>
+                                                            <option>05</option>
+                                                            <option>06</option>
+                                                            <option>07</option>
+                                                            <option>08</option>
+                                                            <option>09</option>
+                                                            <option>10</option>
+                                                            <option>11</option>
+                                                            <option>12</option></select>
+                                                    <select placeholder="YY" name="" class="form-control" required>
+                                                        <option value="" selected disabled>--Year--</option>
+                                                        <option>2022</option>
+                                                        <option>2023</option>
+                                                        <option>2024</option>
+                                                        <option>2025</option>
+                                                        <option>2026</option>
+                                                        <option>2027</option> 
+                                                        <option>2028</option>
+                                                        <option>2029</option>
+                                                        <option>2030</option>
+                                                        <option>2031</option>
+                                                        <option>2032</option>
+                                                        <option>2033</option>
+                                                        <option>2034</option>
+                                                        <option>2035</option>
+                                                        <option>2036</option></select></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group mb-4"> <label data-toggle="tooltip" title="Three digit CV code on the back of your card">
+                                                    <h6>CVV <i class="fa fa-question-circle d-inline"></i></h6>
+                                                </label> <input type="password" id="cvv" required class="form-control"> </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        {% comment %} <a href="/payment-stage"> {% endcomment %}
+                                            <button type="submit" class="subscribe btn btn-primary btn-block shadow-sm" onclick="validate()"> Confirm Payment </button>
+                                        {% comment %} </a> {% endcomment %}
+                                </form>
+                            </div>
+                        </div> <!-- End -->
+                        <!-- Paypal info -->
+                        <div id="paypal" class="tab-pane fade pt-3">
+                            <form role="form" action="/payment-stage/" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value={{dict1.ORDER_ID}}>
+                                <input type="hidden" name="amt" value={{dict1.TXN_AMOUNT}}>
+                            <div class="form-group"> <label for="username">
+                                <h6>Enter UPI ID</h6>
+                            </label> <input type="text" name="googlepay" placeholder="example@okbank" required class="form-control "> </div>
+                            <p> <button type="submit" class="btn btn-primary "><i class="fa-brands fa-google-pay mr-2"></i>Pay using UPI ID </button> </p>
+                            <p class="text-muted"> Note: After clicking on the button, you will be directed to a secure gateway for payment. After completing the payment process, you will be redirected back to the website to view details of your order. </p>
+                        </div> 
+                    </form>
+                    <!-- End -->
+                        <!-- bank transfer info -->
+                        <div id="net-banking" class="tab-pane fade pt-3">
+                            <form role="form" action="/payment-stage/" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value={{dict1.ORDER_ID}}>
+                                <input type="hidden" name="amt" value={{dict1.TXN_AMOUNT}}>
+                            <div class="form-group "> <label for="Select Your Bank">
+                                    <h6>Select your Bank</h6>
+                                </label> <select class="form-control" id="ccmonth">
+                                    <option value="" selected disabled>--Please select your Bank--</option>
+                                    <option>HDFC Bank</option>
+                                    <option>SBI Bank</option>
+                                    <option>AXIS Bank</option>
+                                    <option>BOI Bank</option>
+                                    <option>PNB Bank</option>
+                                    <option>KOTAK MAHINDRA Bank</option>
+                                    <option>ICICI Bank</option>
+                                    <option>UNION Bank</option>
+                                    <option>BARODA Bank</option>
+                                    <option>IDBI Bank</option>
+                                </select> </div>
+                            <div class="form-group">
+                                <p> <button type="submit" class="btn btn-primary "><i class="fas fa-mobile-alt mr-2"></i> Proceed Payment</button> </p>
+                            </div>
+                            <p class="text-muted">Note: After clicking on the button, you will be directed to a secure gateway for payment. After completing the payment process, you will be redirected back to the website to view details of your order. </p>
+                        </div>
+                    </form> <!-- End -->
+                        <!-- End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    <script>    
+    //     $(function() {
+    //   $('[data-toggle= "\"]').tooltip()
+    // })
+    {% comment %} let cNumber = document.getElementById('cardNumber');
+    cNumber.addEventListener('input', function (e) {
+    let num = cNumber.value;
+    let newValue = '';
+    num = num.replace(/\s/g, '');
+    for (var i = 0; i < num.length; i++) {
+        if (i % 4 == 0 && i > 0) newValue = newValue.concat(' ');
+        newValue = newValue.concat(num[i]);
+        cNumber.value = newValue;
+    }
+}) {% endcomment %}
+
+setTimeout(() => {
+    let get = document.getElementById('msg');
+    get.style.display = 'none';
+    }, 3000);
+
+    const numericField = document.getElementById("cardNumber");
+
+        // Add an input event listener to the text field
+        numericField.addEventListener("input", function () {
+            // Remove any non-numeric characters using a regular expression
+            this.value = this.value.replace(/[^0-9]/g, "");
+        });
+
+
+        const cvvField = document.getElementById("cvv");
+
+        // Add an input event listener to the text field
+        cvvField.addEventListener("input", function () {
+            // Remove any non-numeric characters using a regular expression
+            this.value = this.value.replace(/[^0-9]/g, "");
+        });
+{% comment %} 
+    function validate(){
+        let cnumber = document.getElementById('cardNumber').value;
+        console.log(cnumber)
+        let cnumber1 = cnumber.length;
+        if (cnumber1 < 16){
+            alert("Credit Card Number Should be of 16 Digits");
+        }   
+    }      {% endcomment %}
+</script>
+</body>
+</html>
+
+

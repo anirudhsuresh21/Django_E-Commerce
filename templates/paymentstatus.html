@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Payment status{% endblock title %}
+{% block body %}
+<h1 class="text-center">Payment Status</h1>
+<div class="container mt-2">
+    {% for message in messages %}
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+      <strong>{{message}}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">     
+<div class="alert alert-success" role="alert">
+    PAYMENT STATUS
+    </div>
+    <div class="container mt-3"> 
+        <div class="col my-4">   
+            <h3>Payment status regarding your Order Id {{data.oid}} </h3>
+            {% if data.stats == "SUCCESS" %}
+            ORDER SUCCESS
+            <br>
+            {% else %}
+            ORDER FAILURE
+            {% endif %}
+        </div>
+    </div>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+</div>
+{% endblock body %}

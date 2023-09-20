@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+<!--extend method is used to call a previously bulit html page to this page this method
+ensures the reusability of the code-->
+{% block title %}Home{% endblock title %} 
+{% block content %}
+
+<div class="card bg-light p-5 ">
+    <!--card is a bootstrap class for creating card like boxes -->
+    <!--for showing warning message if the password is not same or the email already exists-->
+    {% for message in messages %}
+
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+        <strong>{{message}}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+
+
+    <h3 class="text-dark">Sign Up</h3>
+
+<form action="/auth/signup/" method="post">
+    <!--post method is used to send the data to the backend-->
+    {% csrf_token %}
+    <!--csrf token is used by django to maintain the credibility if the data in the form-->
+    <br/>
+    <label for="email">Email</label>
+    <div class="form-group">
+      <input type="email" class="form-control p-2" id="email" name="email" required />
+    </div>
+    <label for="pass1">Password</label>
+    <div class="form-group">
+      <input type="password" class="form-control p-2" id="pass1" name="pass1" required />
+    </div>
+    <label for="pass2">Confirm Password</label>
+    <div class="form-group">
+      <input type="password" class="form-control p-2" id="pass2" name="pass2" required />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-dark" onclick="validatePassword()">SignIn</button>
+    <br >
+    Already User? <a href="/auth/login/">Login</a>
+    <br />
+  </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% autoescape off %}
+
+Subject: Welcome to Our Store!
+Dear {{user.username}},
+Welcome to Our Store and thank you for creating an account. We're excited to have you shopping with us.
+To finish setting up your account, please verify your email by clicking the link below. This will allow you to place orders, track shipments and view your order history.
+
+http://{{domain}}{% url 'activate' uidb64=uid token=token %}
+
+Once verified, you can start browsing our selection of products. Don't forget to save items to your Wish List for later!
+We're here to ensure your shopping experience is enjoyable. If you need any help, please check our Help Center or contact our support team at weshop_@outlook.com.
+Thanks again and happy shopping!
+
+Regards,
+WeShop Enterprise
+
+{% endautoescape %}

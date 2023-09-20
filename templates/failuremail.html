@@ -1,0 +1,19 @@
+{% autoescape off %}
+
+Subject: Order  {{orderid}} Cancelled
+
+Dear {{user.username}},
+We regret to inform you that your recent order with Our Store was not processed successfully.
+Order Details:
+
+Order #: {{orderid}}
+Placed on: {{date}}
+It seems there was an issue with your payment method and we were unable to take payment for this order. Please check your payment details and try placing the order again.
+If the problem persists, please contact our support team right away at support@ourstore.com or 123-456-7890. A member of our team will be happy to assist you further.
+We apologize for any inconvenience caused. Please try ordering again or let us know if you have any other questions.
+Thank you for your understanding. We look forward to completing your order soon.
+
+Regards,
+WeShop Enterprise.
+
+{% endautoescape %}

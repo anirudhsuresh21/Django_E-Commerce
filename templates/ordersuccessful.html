@@ -1,0 +1,21 @@
+{% autoescape off %}
+
+Subject: Order Confirmation - Order {{orderid}}
+
+Dear {{user.username}},
+Thank you for your recent order with Our Store! We're processing your purchase and will ship it out soon.
+
+Order Details:
+Order {{orderid}}
+Placed on: {{date}}
+Items Ordered:
+{{list}}
+Total: Rs. {{amt}}
+
+Your order is currently being prepared for shipment. You will receive tracking details via email as soon as your package ships out.
+For any order related questions, please contact our support team at weshop_@outlook.com or call 123-456-7890.
+Thanks again for shopping with us. We hope you love your new items!
+
+Regards,
+WeShop Enterprise.
+{% endautoescape %}
