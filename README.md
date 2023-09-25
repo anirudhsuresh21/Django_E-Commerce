@@ -31,12 +31,11 @@ machine:
     command:
 
     ```bash git clone
-    https://github.com/yourusername/your-django-app.git 
+    https://github.com/yourusername/Django_E-Commerce.git 
 
 2. Navigate to the project directory:
      ```bash Copy code 
-     cd your-django-app 
-
+     cd Django_E-Commerce
 
 3. Create a virtual environment (optional but recommended):
     ```bash Copy code 
