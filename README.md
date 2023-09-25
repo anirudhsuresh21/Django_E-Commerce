@@ -31,7 +31,7 @@ machine:
     command:
 
     ```bash git clone
-    https://github.com/yourusername/Django_E-Commerce.git 
+    https://github.com/anirudhsuresh21/Django_E-Commerce.git 
 
 2. Navigate to the project directory:
      ```bash Copy code 
