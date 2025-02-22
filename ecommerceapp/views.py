@@ -1,43 +1,35 @@
-from django.shortcuts import render,redirect
-from ecommerceapp.models import Contact,Product,OrderUpdate,Orders
-from django.contrib import messages
+from django.shortcuts import render,redirect, get_object_or_404
+from ecommerceapp.models import Contact,Product,OrderUpdate,Orders, Services, ServiceAppointments
 from math import ceil
 from ecommerceapp import keys
-from django.conf import settings
 MERCHANT_KEY=keys.MK
 import json
 from django.views.decorators.csrf import  csrf_exempt
 from PayTm import Checksum
 from django.contrib import messages
 from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
-from authshop.utils import TokenGenerator,generate_token
-from django.utils.encoding import force_bytes,force_str,DjangoUnicodeDecodeError
-from django.core.mail import EmailMessage
 from django.conf import settings
 from django.core.mail import send_mail
 from datetime import date
 import json
 import re
+from django.contrib.auth.decorators import login_required
 # from models import Orders
 #from PayTm import Checksum
 # Create your views here.
 
 def index(request):
     allProds = []
-    catprods = Product.objects.values('category','id')
-    print(catprods)
+    catprods = Product.objects.values('category', 'product_id')  # Changed from id to product_id
     cats = {item['category'] for item in catprods}
     for cat in cats:
-        prod= Product.objects.filter(category=cat)
-        n=len(prod)
+        prod = Product.objects.filter(category=cat)
+        n = len(prod)
         nSlides = n // 4 + ceil((n / 4) - (n // 4))
         allProds.append([prod, range(1, nSlides), nSlides])
 
-    params= {'allProds':allProds}
-
-    return render(request,"index.html",params)
-    #return render(request,"index.html")
+    params = {'allProds': allProds}
+    return render(request, "index.html", params)
 
 def contact(request):
     if request.method=="POST":
@@ -251,7 +243,7 @@ def pay(request):
             'list' : list          
 
         })
-        send_mail(email_subject,message,settings.EMAIL_HOST_USER,[user])
+        send_mail(email_subject,message,settings.EMAIL_HOST_USER,['achariruia@gmail.com'])
 
         data = {
             'oid': or_id,
@@ -267,7 +259,9 @@ def profile(request):
         messages.warning(request,"Login & Try Again")
         return redirect('/auth/login')
     currentuser=request.user.username
-    items=Orders.objects.filter(email=currentuser)
+    print(currentuser)
+    items=Orders.objects.filter(email="ani@gmail.com")
+    print(items)
     myid=""
 
     
@@ -284,6 +278,7 @@ def profile(request):
     #     print(j.update_desc)
   
     context ={"items":items}
+    print(context)
     # print(currentuser)
     return render(request,"profile.html",context)
 
@@ -293,3 +288,36 @@ def terms(request):
 
 def privacy(request):
     return render(request,'privacy.html')
+
+def service_detail(request, service_id):
+    service = get_object_or_404(Services, service_id=service_id)
+    services = Services.objects.all()
+    return render(request, 'service_detail.html', {'service': service, 'services': services})
+
+@login_required
+def book_appointment(request, service_id):
+    if request.method == 'POST':
+        service = get_object_or_404(Services, service_id=service_id)
+        appointment = ServiceAppointments(
+            user_id=request.user.id,
+            service_name=service.service_name
+        )
+        appointment.save()
+        messages.success(request, 'Appointment booked successfully!')
+        return redirect('service_detail', service_id=service_id)
+
+def services_list(request):
+    """View to display all available services"""
+    services = Services.objects.all()
+    return render(request, 'services.html', {'services': services})
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, product_id=product_id)  # Changed from id to product_id
+    return render(request, 'product_detail.html', {'product': product})
+
+
+def mens(request):
+    return render(request, 'mens.html')
+
+def womens(request):
+    return render(request, 'women.html')

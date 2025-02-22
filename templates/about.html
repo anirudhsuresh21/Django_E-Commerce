@@ -1,55 +1,226 @@
-{% extends 'base.html' %}
-
-{% block title %}
-About Us - WeShop
-{% endblock title %} 
-
-{% block content %}
-
+{% extends 'base.html' %} {% block title %}About - Forever Finds{% endblock title %}
+{% block content%}
 <h1>About Us</h1>
-
-{% endblock content %} 
+{% endblock content %}
 
 {% block body %}
-<br>
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 offset-lg-2">
-            <div class="about-content">
-                <div class="section-title">
-                    <h2>About Us</h2>        
-                  </div>
-                <p class="about-text">
-                    Welcome to WeShop, your go-to online destination for all your shopping needs. Founded in [Year], WeShop is committed to providing you with a seamless and delightful shopping experience. Whether you're looking for the latest fashion trends, electronics, home essentials, or unique gifts, we've got you covered.
-                </p>
-                <p class="about-text">
-                    Our mission is simple: to connect you with high-quality products from trusted brands at the best prices. With a user-friendly interface and a vast catalog of products, finding what you love has never been easier. Our dedicated team is constantly curating a diverse range of items to cater to your preferences and needs.
-                </p>
-                <p class="about-text">
-                    At WeShop, we value the trust you place in us, and we take pride in ensuring a secure and enjoyable shopping environment. We prioritize customer satisfaction and strive to exceed your expectations every step of the way.
-                </p>
-                <h2 class="about-subtitle">Our Vision</h2>
-                <p class="about-text">
-                    Our vision is to become your preferred online shopping destination, where you can explore, discover, and shop for products that enrich your life. We aim to redefine convenience and offer you an unmatched shopping journey that is tailored to your preferences.
-                </p>
-                <h2 class="about-subtitle">Why Choose WeShop?</h2>
-                <p class="about-text">
-                    - Wide selection of products across various categories
-                    <br>
-                    - Competitive prices without compromising quality
-                    <br>
-                    - Secure payment options and data protection
-                    <br>
-                    - Fast and reliable shipping
-                    <br>
-                    - Dedicated customer support to assist you
-                </p>
-                <p class="about-text">
-                    Thank you for choosing WeShop as your shopping destination. We're excited to be a part of your shopping journey and look forward to serving you for years to come.
-                </p>
-            </div>
-        </div>
-    </div>
+
+<div class="about-hero">
+  <div class="container">
+    <h1>Forever Finds</h1>
+    <p>Your Perfect Wedding Journey Begins Here</p>
+  </div>
 </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+      <div class="about-content">
+        <div class="section-card">
+          <h2>Our Story</h2>
+          <p>
+            Forever Finds is a premier wedding shopping destination that brings
+            together the finest collection of bridal and groom attire, jewelry,
+            and accessories. We understand that your wedding day is one of
+            life's most cherished moments, and we're here to make your shopping
+            experience as special as your celebration.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <i class="fas fa-tshirt"></i>
+            <h3>Curated Collections</h3>
+            <p>
+              Handpicked selection of lehengas, sherwanis, and wedding
+              essentials from top designers
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <i class="fas fa-ruler"></i>
+            <h3>Custom Fitting</h3>
+            <p>
+              Professional tailoring services for the perfect fit on your
+              special day
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <i class="fas fa-gem"></i>
+            <h3>Bridal Jewelry</h3>
+            <p>
+              Exquisite collection of traditional and contemporary wedding
+              jewelry
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <i class="fas fa-calendar-check"></i>
+            <h3>Easy Appointments</h3>
+            <p>Seamless booking system for fittings and consultations</p>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h2>Our Promise</h2>
+          <div class="promise-list">
+            <div class="promise-item">
+              <i class="fas fa-heart"></i>
+              <span>Personalized attention to every detail</span>
+            </div>
+            <div class="promise-item">
+              <i class="fas fa-star"></i>
+              <span>Premium quality and authentic designs</span>
+            </div>
+            <div class="promise-item">
+              <i class="fas fa-clock"></i>
+              <span>Timely delivery and hassle-free alterations</span>
+            </div>
+            <div class="promise-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>Secure shopping and trusted service</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .about-hero {
+<!--    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),-->
+<!--      url("/static/images/wedding-banner.jpg");-->
+    background-size: cover;
+    background-position: center;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .about-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .about-hero p {
+    font-size: 1.5rem;
+    font-weight: 300;
+  }
+
+  .section-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-card h2 {
+    color: #e43c5c;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 1rem;
+  }
+
+  .section-card h2:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: #e43c5c;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+
+  .feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-10px);
+  }
+
+  .feature-card i {
+    font-size: 2.5rem;
+    color: #e43c5c;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .promise-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .promise-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: transform 0.3s;
+  }
+
+  .promise-item:hover {
+    transform: translateX(10px);
+    background: #e43c5c;
+    color: white;
+  }
+
+  .promise-item:hover i {
+    color: white;
+  }
+
+  .promise-item i {
+    font-size: 1.5rem;
+    color: #e43c5c;
+    transition: color 0.3s;
+  }
+
+  @media (max-width: 768px) {
+    .about-hero {
+      height: 300px;
+    }
+
+    .about-hero h1 {
+      font-size: 2.5rem;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .promise-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 
 {% endblock body %}

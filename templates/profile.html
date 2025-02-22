@@ -1,60 +1,235 @@
-{% extends 'base.html' %}
-{% block title %}Profile Page{% endblock title %}
+{% extends 'base.html' %} {% block title %} Profile Page {% endblock title %}
 {% block body %}
 <section id="portfolio" class="portfolio">
-    <div class="container">
-<h1>My Profile</h1>
-
-<table class="table table-info table-striped">
-    <thead>
-      <tr>
-        <th scope="col">Order ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Products</th>
-        <th scope="col">Amount Paid</th>
-        <th scope="col">Payment Status</th>
-        <th scope="col">Address</th>
-        <th scope="col">Phone Number</th>
-        <th scope="col">Delivery Status</th>
-        <th scope="col">Delivered</th>
-        <th scope="col">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-
-        {% for i  in items %}
-
-        <tr>
-            <th scope="row">{{i.oid}} </th>
-            <td> {{i.name}}</td>
-            <td>{{i.items_json}} </td>
-            <td>{{i.amount}} </td>
-            <td> {{i.paymentstatus}}</td>
-            <td> {{i.address1}}</td>
-            <td> {{i.phone}}</td>
-
-            <td> {{i.update_desc}}</td>
-
-
-       
-            {% if i.delivered %}
-            <td><i class="fa-solid fa-circle-check"></i> Delivered</td>
-            {% else %}
-            <td> <i class="fa-solid fa-truck"></i> Not Delivered</td>
-            {% endif %}
-
-
-            <td> {{i.timestamp}}</td>
-            
-  
-          
-        
-        {% endfor %}
-
-
-
-    </tbody>
-</table>
+  <div class="container">
+    <div class="section-title">
+      <h1>My Orders</h1>
+      <p>Track and manage your orders</p>
     </div>
+
+    <div class="orders-table">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Order ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Products</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Address</th>
+            <th scope="col">Contact</th>
+            <th scope="col">Delivery</th>
+            <th scope="col">Status</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in items %}
+          <tr class="order-row">
+            <td class="order-id">{{i.oid}}</td>
+            <td>{{i.name}}</td>
+            <td class="products">{{i.items_json}}</td>
+            <td class="amount">₹{{i.amount}}</td>
+            <td>
+              <span class="payment-status {{i.paymentstatus|lower}}">
+                {{i.paymentstatus}}
+              </span>
+            </td>
+            <td class="address">{{i.address1}}</td>
+            <td>{{i.phone}}</td>
+            <td>{{i.update_desc}}</td>
+            <td>
+              {% if i.delivered %}
+              <span class="delivery-status delivered">
+                <i class="fa-solid fa-circle-check"></i> Delivered
+              </span>
+              {% else %}
+              <span class="delivery-status pending">
+                <i class="fa-solid fa-truck"></i> In Transit
+              </span>
+              {% endif %}
+            </td>
+            <td class="date">{{i.timestamp}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </section>
+
+<style>
+  .portfolio {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+  }
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-title h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .section-title p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  .orders-table {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .table {
+    margin-bottom: 0;
+  }
+
+  .table thead th {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .order-row {
+    transition: all 0.3s ease;
+  }
+
+  .order-row:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .order-row td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #eee;
+  }
+
+  .order-id {
+    font-weight: 600;
+    color: #3498db;
+  }
+
+  .amount {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .payment-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .payment-status.success {
+    background: #e1f9f1;
+    color: #27ae60;
+  }
+
+  .payment-status.failure {
+    background: #fbe9e7;
+    color: #e74c3c;
+  }
+
+  .delivery-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .delivery-status.delivered {
+    background: #e1f9f1;
+    color: #27ae60;
+  }
+
+  .delivery-status.pending {
+    background: #fff3e0;
+    color: #f39c12;
+  }
+
+  .address {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .products {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .date {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .orders-table {
+      overflow-x: auto;
+    }
+
+    .section-title h1 {
+      font-size: 2rem;
+    }
+
+    .table thead th {
+      font-size: 0.8rem;
+      padding: 0.75rem;
+    }
+
+    .order-row td {
+      padding: 0.75rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Empty State */
+  tbody:empty::after {
+    content: "No orders found";
+    display: block;
+    text-align: center;
+    padding: 2rem;
+    color: #7f8c8d;
+    font-style: italic;
+  }
+
+  /* Loading Animation */
+  .orders-table.loading {
+    position: relative;
+    min-height: 200px;
+  }
+
+  .orders-table.loading::after {
+    content: "Loading...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #7f8c8d;
+  }
+</style>
 {% endblock body %}

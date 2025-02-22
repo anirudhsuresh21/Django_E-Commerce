@@ -1,0 +1,303 @@
+{% extends 'base.html' %} {% block title %}{{ product.product_name }}{% endblock %} {% block body %}
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="product-images">
+        <div class="main-image">
+          <img
+            src="/media/{{product.main_image}}"
+            alt="{{product.product_name}}"
+            class="img-fluid"
+            id="mainImage"
+          />
+        </div>
+        <div class="thumbnail-images">
+          {% if product.image_2 %}
+          <img
+            src="/media/{{product.image_2}}"
+            alt="Additional view"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %} {% if product.image_3 %}
+          <img
+            src="/media/{{product.image_3}}"
+            alt="Additional view"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %} {% if product.image_4 %}
+          <img
+            src="/media/{{product.image_4}}"
+            alt="Additional view"
+            onclick="changeImage(this.src)"
+          />
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="product-details-content">
+        <div class="category-badge">{{ product.get_category_display }}</div>
+        <h1 class="product-title">{{ product.product_name }}</h1>
+
+        <div class="price-section">
+          {% if product.sale_price %}
+          <div class="sale-price">
+            <span class="original-price">₹{{ product.price }}</span>
+            <span class="current-price">₹{{ product.sale_price }}</span>
+            <span class="discount-badge"
+              >{{ product.discount_percentage }}% OFF</span
+            >
+          </div>
+          {% else %}
+          <h2 class="product-price">₹{{ product.price }}</h2>
+          {% endif %}
+        </div>
+
+        <div class="product-meta">
+          <div class="meta-item">
+            <span class="label">Category:</span>
+            <span class="value">{{ product.get_category_display }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Style:</span>
+            <span class="value">{{ product.style }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Occasion:</span>
+            <span class="value">{{ product.occasion_type }}</span>
+          </div>
+        </div>
+
+        <div class="product-description">
+          <h3>Description</h3>
+          <p>{{ product.description }}</p>
+        </div>
+
+        {% if product.fabric %}
+        <div class="fabric-info">
+          <h4>Fabric Details</h4>
+          <p>{{ product.fabric }}</p>
+          {% if product.work_type %}
+          <p class="work-type">Work: {{ product.work_type }}</p>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="size-selection">
+          <h4>Select Size</h4>
+          <div class="size-options">
+            {% for size in product.sizes_available %}
+            <label class="size-option">
+              <input type="radio" name="size" value="{{ size }}" />
+              <span>{{ size }}</span>
+            </label>
+            {% endfor %}
+          </div>
+          {% if product.custom_sizing_available %}
+          <div class="custom-size-note">
+            <i class="fas fa-ruler"></i> Custom sizing available
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="product-actions">
+          <div
+            class="stock-info {% if product.stock > 0 %}in-stock{% else %}out-of-stock{% endif %}"
+          >
+            {% if product.stock > 0 %}
+            <i class="fas fa-check-circle"></i> In Stock {% else %}
+            <i class="fas fa-times-circle"></i> Out of Stock {% endif %}
+          </div>
+
+          {% if product.stock > 0 %}
+          <button id="pr{{product.product_id}}" class="btn-add-to-cart">
+            <i class="fa-solid fa-cart-shopping"></i> Add To Cart
+          </button>
+          {% endif %}
+        </div>
+
+        <div class="delivery-info">
+          <i class="fas fa-truck"></i>
+          <span>Estimated Delivery: {{ product.delivery_time }}</span>
+          {% if product.alteration_available %}
+          <div class="alteration-note">
+            <i class="fas fa-scissors"></i> Alteration service available
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-images {
+    position: relative;
+  }
+
+  .main-image {
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .thumbnail-images {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .thumbnail-images img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .thumbnail-images img:hover {
+    transform: scale(1.1);
+  }
+
+  .category-badge {
+    background: #e74c3c;
+    color: white;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    margin-bottom: 1rem;
+  }
+
+  .sale-price {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    color: #999;
+  }
+
+  .current-price {
+    color: #e74c3c;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .discount-badge {
+    background: #2ecc71;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+  }
+
+  .product-details-content {
+    padding: 20px;
+  }
+
+  .product-title {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+
+  .product-price {
+    color: #e74c3c;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .product-description {
+    margin: 2rem 0;
+  }
+
+  .product-description h3 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+
+  .product-meta {
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+
+  .btn-add-to-cart {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-add-to-cart:hover {
+    background: #c0392b;
+  }
+
+  .size-options {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .size-option {
+    cursor: pointer;
+  }
+
+  .size-option input {
+    display: none;
+  }
+
+  .size-option span {
+    display: block;
+    padding: 0.5rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.3s;
+  }
+
+  .size-option input:checked + span {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+  }
+
+  .delivery-info {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+</style>
+
+<script>
+  function changeImage(src) {
+    document.getElementById("mainImage").src = src;
+  }
+
+  $(document).ready(function () {
+    $(".btn-add-to-cart").click(function () {
+      var idstr = this.id.toString();
+      if (cart[idstr] != undefined) {
+        qty = cart[idstr][0] + 1;
+      } else {
+        qty = 1;
+        name = "{{ product.product_name }}";
+        price = "{{ product.price }}";
+        cart[idstr] = [qty, name, price];
+      }
+      updateCart(cart);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      $("#popcart").click();
+    });
+  });
+</script>
+{% endblock %}

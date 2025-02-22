@@ -1,13 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Home{% endblock title %} {% block content %}
-<a href="index.html" class="logo"
-  ><img
-    height="150px"
-    src="{% static '/assets/img/foreverfinds.png' %}"
-    alt=""
-    class="img-fluid"
-    style="max-height: 150px; margin: 10px 0"
-/></a>
-{% endblock content %} {% block body %}
+{% extends 'base.html' %} {% block title %}Home{% endblock title %} {% block content %}
+<h1>Armocromy</h1>
+{% endblock content %} {% block body %} {% load static %}
 
 <!-- ======= Portfolio Section ======= -->
 <section id="portfolio" class="portfolio">
@@ -30,68 +23,31 @@
         {% for i in product %}
         <div class="col-md-3 mt-3">
           <div class="product-card">
-            {% if i.sale_price %}
-            <div class="sale-badge">
-              <span>{{ i.discount_percentage }}% OFF</span>
-            </div>
-            {% endif %}
-
             <div class="product-image">
               <img
-                src="/media/{{ i.main_image }}"
-                alt="{{i.product_name}}"
+                src="/media/{{i.image}}"
                 class="card-img-top"
+                alt="{{i.product_name}}"
               />
             </div>
-
             <div class="product-details">
-              <div class="category-tag">{{ i.get_category_display }}</div>
-              <h5 class="product-title" id="namepr{{i.product_id}}">
+              <h5 class="product-title" id="namepr{{i.id}}">
                 {{i.product_name}}
               </h5>
-
+              <p class="product-description">{{i.desc|slice:"0:53"}}...</p>
               <div class="price-section">
-                {% if i.sale_price %}
-                <div class="price-wrap">
-                  <span class="original-price">₹{{i.price}}</span>
-                  <h6 class="product-price">
-                    ₹<span id="pricepr{{i.product_id}}">{{i.sale_price}}</span>
-                  </h6>
-                </div>
-                {% else %}
                 <h6 class="product-price">
-                  ₹<span id="pricepr{{i.product_id}}">{{i.price}}</span>
+                  ₹<span id="pricepr{{i.id}}">{{i.price}}</span>
                 </h6>
-                {% endif %}
               </div>
 
-              {% if i.occasion_type or i.custom_sizing_available %}
-              <div class="product-meta">
-                {% if i.occasion_type %}
-                <span class="occasion">{{ i.occasion_type }}</span>
-                {% endif %} {% if i.custom_sizing_available %}
-                <span class="custom-size"
-                  ><i class="fas fa-ruler"></i> Custom Size</span
-                >
-                {% endif %}
-              </div>
-              {% endif %}
-
-              <div class="button-group" id="divpr{{i.product_id}}">
-                {% if i.stock > 0 %}
+              <div class="button-group">
                 <span id="divpr{{i.id}}" class="divpr">
-                  <button id="pr{{i.product_id}}" class="btn-cart cart">
-                    <i class="fa-solid fa-cart-shopping"></i> Add To Cart
-                  </button>
+                <button id="pr{{i.id}}" class="btn-cart cart">
+                  <i class="fa-solid fa-cart-shopping"></i> Add To Cart
+                </button>
                 </span>
-                {% else %}
-                <button class="btn-out-of-stock" disabled>Out of Stock</button>
-                {% endif %}
-
-                <a
-                  href="{% url 'product_detail' i.product_id %}"
-                  class="btn-view"
-                >
+                <a href="{% url 'product_detail' i.id %}" class="btn-view">
                   <i class="fa-solid fa-eye"></i> View
                 </a>
               </div>
@@ -348,51 +304,6 @@
 
   .section-title h4 span {
     color: #e74c3c;
-  }
-
-  .sale-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #e74c3c;
-    color: white;
-    padding: 0.5rem;
-    border-radius: 25px;
-    font-size: 0.8rem;
-    z-index: 1;
-  }
-
-  .category-tag {
-    font-size: 0.8rem;
-    color: #666;
-    margin-bottom: 0.5rem;
-  }
-
-  .price-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .original-price {
-    text-decoration: line-through;
-    color: #999;
-    font-size: 0.9rem;
-  }
-
-  .product-meta {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.8rem;
-    color: #666;
-    margin: 0.5rem 0;
-  }
-
-  .btn-out-of-stock {
-    background: #95a5a6;
-    color: white;
-    cursor: not-allowed;
-    opacity: 0.8;
   }
 </style>
 {% endblock body %}

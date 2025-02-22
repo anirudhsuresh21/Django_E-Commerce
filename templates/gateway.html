@@ -6,41 +6,276 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Window</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-
-
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-{% comment %} <!-- <link rel="stylesheet" href= {% '1.css' %} >  --> {% endcomment %}
-{% comment %} <link href="{% static '/assets/vendor/bootstrap/css/bootstrap.min.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/bootstrap-icons/bootstrap-icons.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/boxicons/css/boxicons.min.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/glightbox/css/glightbox.min.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/remixicon/remixicon.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/swiper/swiper-bundle.min.css ' %}" rel="stylesheet"> {% endcomment %}
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-    body{
-        background: #f5f5f5
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
     }
-    .rounded{
-        border-radius: 1rem
+
+    .container {
+        max-width: 1400px;  /* Increased from 1200px */
+        margin: auto;
+        padding: 2rem;
     }
-    .nav-pills .nav-link{
-        color: #555
+
+    .col-lg-6 {
+        flex: 0 0 75%;  /* Changed from 50% */
+        max-width: 75%;  /* Changed from 50% */
     }
-    .nav-pills .nav-link.active{
-        color: white
-    }    
-    input[type="radio"]{
-        margin-right: 5px
+
+    .card {
+        min-width: 800px;  /* Added minimum width */
+        margin: 0 auto;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
-    .bold{
-        font-weight:bol
+
+    .tab-content {
+        padding: 2rem;  /* Added more padding */
+    }
+
+    @media (max-width: 992px) {
+        .col-lg-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .card {
+            min-width: auto;
+            width: 100%;
+        }
+    }
+
+    .card-header {
+        background: white;
+        padding: 0;
+        border: none;
+    }
+
+    .display-6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 2rem;
+    }
+
+    .nav-pills {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 10px;
+        gap: 10px;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 8px;
+        padding: 15px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link.active {
+        background: #3498db;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .nav-pills .nav-link i {
+        font-size: 1.2rem;
+        margin-right: 8px;
+    }
+
+    .card.bg-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9) !important;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+
+    .card.bg-primary h5 {
+        color: white;
+        margin: 0;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .input-group-text {
+        border: none;
+        background: #f8f9fa;
+        padding: 12px 15px;
+    }
+
+    .input-group-append i {
+        font-size: 1.5rem;
+        color: #7f8c8d;
+    }
+
+    select.form-control {
+        height: 60px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #3498db;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-block {
+        padding: 15px;
+    }
+
+    .text-muted {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .alert {
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Payment Method Specific Styles */
+    #credit-card, #paypal, #net-banking {
+        padding: 2rem;
+    }
+
+    .tab-pane {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+
+        .nav-pills {
+            flex-direction: column;
+        }
+
+        .nav-pills .nav-link {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .btn-block {
+            padding: 12px;
+        }
+    }
+
+    /* Card Icons Animation */
+    .input-group-append i {
+        transition: all 0.3s ease;
+    }
+
+    .input-group-append i:hover {
+        transform: scale(1.1);
+        color: #3498db;
+    }
+
+    /* Input Focus Effects */
+    .form-control:focus + .input-group-append i {
+        color: #3498db;
+    }
+
+    /* Success State */
+    .was-validated .form-control:valid {
+        border-color: #2ecc71;
+    }
+
+    /* Error State */
+    .was-validated .form-control:invalid {
+        border-color: #e74c3c;
+    }
+
+    /* Enhanced Dropdown Styles */
+    select.form-control {
+        height: 50px !important;  /* Increased from default */
+        padding: 0 15px;
+        font-size: 1rem;
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 15px;
+    }
+
+    select.form-control:hover {
+        border-color: #3498db;
+    }
+
+    select.form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .input-group select.form-control {
+        margin: 0 5px;  /* Add spacing between month/year dropdowns */
+    }
+
+    select.form-control option {
+        padding: 10px;  /* Increase padding for dropdown options */
+        font-size: 1rem;
+    }
+
+    /* Bank selection dropdown specific styles */
+    #ccmonth.form-control {
+        height: 65px !important;  /* Even larger for bank selection */
     }
 </style>
 </head>
 <body>
-    <div class="container py-5">
+    <div class="container py-6">
         <!-- For demo purpose -->
         <div class="row mb-4">
             <div class="col-lg-8 mx-auto text-center">

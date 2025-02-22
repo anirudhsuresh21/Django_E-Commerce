@@ -11,5 +11,10 @@ urlpatterns = [
     path('payment-stage/',views.paytm,name="payment-stage"),
     path('payment-status/',views.pay,name="payment-status"),
     path('termsofservice/',views.terms,name="termsofservice"),
-    path('privacypolicy/',views.privacy,name="privacypolicy")
+    path('privacypolicy/',views.privacy,name="privacypolicy"),
+    path('service/<int:service_id>/', views.service_detail, name='service_detail'),
+    path('service/<int:service_id>/book/', views.book_appointment, name='book_appointment'),
+    path('services/', views.services_list, name='services_list'),
+    path('product/<int:product_id>/', views.product_detail, name='product_detail'),  # Updated to use product_id
+    # path('mens/')
 ]

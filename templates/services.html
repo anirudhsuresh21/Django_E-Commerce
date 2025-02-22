@@ -1,0 +1,265 @@
+{% extends 'base.html' %} {% block title %}Marriage Services{% endblock title %}
+{% block body %} {% load static %}
+<div class="services-hero">
+  <div class="container">
+    <div class="section-title text-center">
+      <h1>Wedding & Matrimonial Services</h1>
+      <p>Find the perfect services for your special day</p>
+    </div>
+  </div>
+</div>
+
+<div class="container my-4">
+  <div class="row">
+    {% for service in services %}
+    <div class="col-md-4 mb-4">
+      <div class="service-card">
+        {% if service.profile_image %}
+        <div class="service-image">
+          <img
+            src="/media/{{ service.profile_image }}"
+            alt="{{ service.service_name }}"
+          />
+        </div>
+        {% endif %}
+        <div class="service-content">
+          <div class="service-category">{{ service.service_category }}</div>
+          <h3 class="service-title">{{ service.service_name }}</h3>
+          <p class="provider-name">By {{ service.provider_name }}</p>
+
+          <div class="service-rating">
+            <span class="stars">★</span> {{ service.rating }}
+            <span class="reviews">({{ service.reviews_count }} reviews)</span>
+          </div>
+
+          <div class="service-price">{{ service.price_range }}</div>
+
+          <div class="service-details">
+            <p>
+              <i class="fas fa-map-marker-alt"></i> {{ service.address }}</p>
+            <p><i class="fas fa-clock"></i> {{ service.working_hours }}</p>
+          </div>
+
+          <a
+            href="{% url 'service_detail' service.service_id %}"
+            class="btn-view-service"
+          >
+            View Details
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+      <p>No services available at the moment.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .services-hero {
+    background: linear-gradient(135deg, #e74c3c20 0%, #3498db20 100%);
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .services-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("/static/images/pattern.png") repeat;
+    opacity: 0.1;
+  }
+
+  .section-title h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-title p {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .service-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .service-image {
+    height: 250px;
+    position: relative;
+  }
+
+  .service-image::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+  }
+
+  .service-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .service-card:hover .service-image img {
+    transform: scale(1.1);
+  }
+
+  .service-content {
+    padding: 2rem;
+    position: relative;
+  }
+
+  .service-category {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: #e74c3c;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2);
+  }
+
+  .service-title {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 1rem 0;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .provider-name {
+    color: #e74c3c;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .provider-name i {
+    font-size: 1rem;
+  }
+
+  .service-rating {
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .stars {
+    color: #f1c40f;
+    font-size: 1.2rem;
+  }
+
+  .reviews {
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .service-price {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+
+  .service-details {
+    margin-bottom: 1.5rem;
+  }
+
+  .service-details p {
+    color: #666;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .service-details i {
+    color: #3498db;
+    font-size: 1.1rem;
+  }
+
+  .btn-view-service {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-view-service:hover {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    color: white;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .services-hero {
+      padding: 3rem 0;
+    }
+
+    .section-title h1 {
+      font-size: 2rem;
+    }
+
+    .service-image {
+      height: 200px;
+    }
+
+    .service-content {
+      padding: 1.5rem;
+    }
+  }
+</style>
+{% endblock body %}

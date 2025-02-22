@@ -1,0 +1,257 @@
+{% extends 'base.html' %} {% block title %}{{ service.service_name }}
+{% endblock title %}
+{% block body %}
+<div class="container my-4">
+  <div class="service-detail-card">
+    <div class="service-header">
+      <span class="service-category">{{ service.service_category }}</span>
+      <h2>{{ service.service_name }}</h2>
+      {% if service.verified %}
+      <span class="verified-badge"
+        ><i class="fas fa-check-circle"></i> Verified</span
+      >
+      {% endif %}
+    </div>
+
+    <div class="provider-info">
+      <div class="provider-header">
+        {% if service.profile_image %}
+        <img
+          src="{{ service.profile_image.url }}"
+          alt="{{ service.provider_name }}"
+          class="provider-image"
+        />
+        {% endif %}
+        <div>
+          <h3>{{ service.provider_name }}</h3>
+          <div class="provider-rating">
+            <span class="stars">★</span> {{ service.rating|floatformat:1 }}
+            <span class="reviews">({{ service.reviews_count }} reviews)</span>
+          </div>
+          <p class="experience">
+            {{ service.experience_years }} years of experience
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="service-description">
+      <h4>About This Service</h4>
+      <p>{{ service.description }}</p>
+    </div>
+
+    <div class="service-details-grid">
+      <div class="detail-item">
+        <i class="fas fa-rupee-sign"></i>
+        <div>
+          <h5>Price Range</h5>
+          <p>{{ service.price_range }}</p>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <i class="fas fa-clock"></i>
+        <div>
+          <h5>Working Hours</h5>
+          <p>{{ service.working_hours }}</p>
+          <p>{{ service.available_days }}</p>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <i class="fas fa-location-dot"></i>
+        <div>
+          <h5>Location</h5>
+          <p>{{ service.address }}</p>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <i class="fas fa-globe"></i>
+        <div>
+          <h5>Contact Info</h5>
+          <p>{{ service.email }}</p>
+          <p>{{ service.phone_no }}</p>
+          {% if service.website %}
+          <a href="{{ service.website }}" target="_blank">Visit Website</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if service.social_links %}
+    <div class="social-links">
+      {% for platform, handle in service.social_links.items %}
+      <a href="#" class="social-link">
+        <i class="fab fa-{{ platform }}"></i> {{ handle }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %} {% if user.is_authenticated %}
+    <div class="appointment-form">
+      <h3>Book Appointment</h3>
+      <form
+        method="POST"
+        action="{% url 'book_appointment' service.service_id %}"
+      >
+        {% csrf_token %}
+        <button type="submit" class="btn-book">Book Now</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="login-prompt">
+      <p>Please <a href="{% url 'login' %}">login</a> to book an appointment</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .service-detail-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .service-header {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .provider-badge {
+    background: #e74c3c;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-left: 1rem;
+  }
+
+  .service-info {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+  }
+
+  .info-item i {
+    color: #2c3e50;
+  }
+
+  .btn-book {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .btn-book:hover {
+    background: #27ae60;
+  }
+
+  .login-prompt {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+  }
+
+  .service-category {
+    background: #e74c3c;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+
+  .verified-badge {
+    color: #27ae60;
+    font-size: 0.9rem;
+    margin-left: 1rem;
+  }
+
+  .provider-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .provider-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .provider-rating {
+    margin: 0.5rem 0;
+  }
+
+  .provider-rating .stars {
+    color: #f1c40f;
+  }
+
+  .experience {
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .service-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .detail-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .detail-item i {
+    font-size: 1.5rem;
+    color: #2c3e50;
+  }
+
+  .detail-item h5 {
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .social-link {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .social-link:hover {
+    color: #e74c3c;
+  }
+</style>
+{% endblock body %}
