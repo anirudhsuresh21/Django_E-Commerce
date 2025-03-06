@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}
-Check Out
-{% endblock title %} 
+{% block title %}Checkout{% endblock title %}
+
 {% block content %}
 
 <h1>CheckOut</h1>
 
-{% endblock content %} 
-{% block body %} 
+{% endblock content %}
+{% block body %}
 {% load static %}
 
 <!-- ======= Portfolio Section ======= -->
@@ -37,32 +36,61 @@ Check Out
        
        <div class="container">
            <div class="col my-4">
-               <h2>Step 1 - My Awesome Cart Express Checkout - Review Your Cart Items</h2>
-               <div class="my-4">
-                   <ul class="list-group" id="items">
+               <h2>Review Your Cart Items</h2>
+               <div class="cart-review">
+                   {% if cart_items %}
+                       <div class="list-group" id="items">
+                           {% for item in cart_items %}
+                           <div class="list-group-item cart-item-row" id="cart-item-{{item.product_id}}">
+                               <div class="d-flex justify-content-between align-items-center">
+                                   <div class="item-details">
+                                       <h5 class="item-name">{{ item.product_name }}</h5>
+                                       <div class="price-details">
+                                           <span class="unit-price">₹{{ item.sale_price|default:item.price }}</span>
+                                           <span class="quantity">× {{ item.quantity }}</span>
+                                       </div>
+                                   </div>
+                                   <div class="item-controls">
+                                       <div class="quantity-controls mb-2">
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity({{item.product_id}}, {{item.quantity|add:'-1'}}); location.reload();">-</button>
+                                        <span class="mx-2">{{ item.quantity }}</span>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity({{item.product_id}}, {{item.quantity|add:'1'}}); location.reload();">+</button>
+                                        
+                                       </div>
+                                       <button class="btn btn-sm btn-danger" onclick="removeFromCart({{item.product_id}})">
+                                           <i class="fas fa-trash"></i> Remove
+                                       </button>
+                                   </div>
+                                   <div class="item-total">
+                                       ₹{{ item.total_price }}
+                                   </div>
+                               </div>
+                           </div>
+                           {% endfor %}
 
-                    
-                   </ul>
-       
-                   <nav aria-label="breadcrumb">
-         <ol class="breadcrumb mt-3">
-           <li class="breadcrumb-item active" aria-current="page">Your Cart Total Is <b>Rs. <span id="totalprice"></span> <span id="amount"></span></b>. Enter your details below & place your order. Thanks for using Shopping Cart</li>
-           <li></li>
-         </ol>
-       </nav>
-       
-       
-       
-                   
+                           <div class="list-group-item total-section">
+                               <div class="d-flex justify-content-between align-items-center">
+                                   <h4>Total Amount:</h4>
+                                   <h4 class="total-amount">₹{{ cart_total }}</h4>
+                               </div>
+                           </div>
+                       </div>
+                   {% else %}
+                       <div class="empty-cart">
+                           <i class="fas fa-shopping-cart"></i>
+                           <p>Your cart is empty. Please add some items before checking out.</p>
+                           <a href="{% url 'index' %}" class="btn btn-primary">Continue Shopping</a>
+                       </div>
+                   {% endif %}
                </div>
            </div>
+
+           {% if cart_items %}
            <div class="col my-4">
-               <h2>Step 2 - Enter Address & Other Details:</h2>
+               <h2>Enter Delivery Details</h2>
                <form method="post" action="/checkout/">
-                {% csrf_token %}
-                   <input type="hidden" name="itemsJson" id="itemsJson">
-                
-                   <input type="hidden" id="amt" name="amt">
+                   {% csrf_token %}
+                   <input type="hidden" name="amount" value="{{ cart_total }}">
                    <div class="form-row">
                        <div class="form-group col-md-6">
                            <label for="inputname">Name</label>
@@ -113,6 +141,7 @@ Check Out
                    <button id="btn" type="submit" class="btn btn-success btn-sm btn-block col-md-4" >Place Order</button>
                </form>
            </div>
+           {% endif %}
        </div>
    
  <script src="https://code.jquery.com/jquery-3.3.1.js"
@@ -120,6 +149,48 @@ Check Out
  crossorigin="anonymous"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script>
+function removeFromCart(productId) {
+    if (confirm('Are you sure you want to remove this item?')) {
+        $.ajax({
+            url: '/api/cart/remove/',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                // Remove the item row with animation
+                $(`#cart-item-${productId}`).fadeOut(300, function() {
+                    $(this).remove();
+                    updateCartTotals(response);
+                });
+            },
+            error: function() {
+                alert('Error removing item from cart');
+            }
+        });
+    }
+}
+
+function updateCartTotals(cartData) {
+    if (cartData.total_items === 0) {
+        // If cart is empty, show empty cart message and hide checkout form
+        $('.cart-review').html(`
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Your cart is empty. Please add some items before checking out.</p>
+                <a href="{% url 'index' %}" class="btn btn-primary">Continue Shopping</a>
+            </div>
+        `);
+        $('.checkout-form').hide();
+    } else {
+        // Update total amount
+        $('.total-amount').text(`₹${cartData.total_amount}`);
+    }
+}
+</script>
 
 <style>
     .portfolio {
@@ -301,50 +372,122 @@ Check Out
         padding-bottom: 1rem;
         border-bottom: 2px solid #f1f1f1;
     }
-</style>
 
-<script>
-    if (localStorage.getItem('cart') == null) {
-        var cart = {};
-     } else {
-        cart = JSON.parse(localStorage.getItem('cart'));
-     }
-     console.log(cart);
-     
-     var sum = 0;
-     var totalPrice = 0;
-     if ($.isEmptyObject(cart)) {
-        //if object is empty
-        mystr = `<p>Your cart is empty, please add some items to your cart before checking out!</p>`
-        $('#items').append(mystr);
-     } else {
-        for (item in cart) {
-            let name = cart[item][1];
-            let qty = cart[item][0];
-            let itemPrice = cart[item][2];
-            sum = sum + qty;
-            totalPrice = totalPrice + qty * itemPrice;
-            
-            mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                        ${name}
-                        <div><b> Price : ${itemPrice}</b></div>
-                        <span class="badge badge-primary badge-pill">${qty}</span>
-                    </li>`
-            $('#items').append(mystr);
-        }
-        document.getElementById('totalprice').innerHTML = totalPrice;
-     }
-     
-     $('#itemsJson').val(JSON.stringify(cart));
-     
-     var test = `${totalPrice}`;
-     document.getElementById("amt").value = test;
-     
-     // Add event listener to the "Place Order" button
-     $('#btn').on('click', function() {
-        // Clear the cart and local storage
-        localStorage.removeItem('cart');
-     });
-</script>
+    .cart-review {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .item-details {
+        flex-grow: 1;
+    }
+
+    .item-name {
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+    }
+
+    .price-details {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .unit-price {
+        margin-right: 1rem;
+    }
+
+    .item-total {
+        font-weight: 600;
+        color: #e74c3c;
+        font-size: 1.1rem;
+    }
+
+    .total-section {
+        background: #f8f9fa;
+        border-top: 2px solid #eee;
+    }
+
+    .total-amount {
+        color: #e74c3c;
+        font-weight: 700;
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+    }
+
+    .empty-cart i {
+        font-size: 4rem;
+        color: #95a5a6;
+        margin-bottom: 1rem;
+    }
+
+    .empty-cart p {
+        margin-bottom: 1.5rem;
+    }
+
+    .cart-item-row {
+        transition: all 0.3s ease;
+    }
+
+    .cart-item-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    .item-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 5px;
+        padding: 0.2rem;
+    }
+
+    .quantity-controls button {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-danger {
+        background: #e74c3c;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background: #c0392b;
+        transform: scale(1.05);
+    }
+
+    .item-total {
+        min-width: 100px;
+        text-align: right;
+        font-weight: bold;
+        color: #e74c3c;
+    }
+
+    @keyframes fadeOut {
+        to { opacity: 0; transform: translateX(100px); }
+    }
+
+    .removing {
+        animation: fadeOut 0.3s ease forwards;
+    }
+</style>
 
 {% endblock body %}

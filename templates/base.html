@@ -79,19 +79,34 @@
             <li><a class="nav-link scrollto" href="/about">About</a></li>
             <li><a class="nav-link scrollto" href="/checkout/">Checkout</a></li>
             <li><a class="nav-link scrollto" href="/profile">My Profile</a></li>
-            <button
-              type="button"
-              class="nav-link scrollto bg-danger p-3 m-2 text-white"
-              id="popcart"
-              data-container="body"
-              data-toggle="popover"
-              data-placement="bottom"
-              data-html="true"
-            >
-              <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cart"
-                >0</span
-              >)
-            </button>
+            <li>
+              <a class="nav-link" href="{% url 'mens_collection' %}"
+                >Groom Collection</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="{% url 'womens_collection' %}"
+                >Bridal Collection</a
+              >
+            </li>
+            <li>
+              <div class="cart-wrapper">
+                <button
+                  type="button"
+                  class="nav-link scrollto btn-cart-nav"
+                  id="cartButton"
+                  data-bs-toggle="popover"
+                  data-bs-placement="bottom"
+                  data-bs-html="true"
+                  title="Shopping Cart"
+                >
+                  <i class="fa-solid fa-cart-shopping"></i> Cart (<span
+                    id="cart"
+                    >0</span
+                  >)
+                </button>
+              </div>
+            </li>
 
             {% if request.user.is_authenticated %}
             <li>
@@ -256,13 +271,282 @@
     ></a>
 
     <!-- Vendor JS Files -->
-    <script src="{% static '/assets/vendor/bootstrap/js/bootstrap.bundle.min.js ' %}"></script>
-    <script src="{% static '/assets/vendor/glightbox/js/glightbox.min.js ' %}"></script>
-    <script src="{% static '/assets/vendor/isotope-layout/isotope.pkgd.min.js ' %}"></script>
-    <script src="{% static '/assets/vendor/swiper/swiper-bundle.min.js ' %}"></script>
-    <script src="{% static '/assets/vendor/php-email-form/validate.js ' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static '/assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script src="{% static '/assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static '/assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
 
     <!-- Template Main JS File -->
-    <script src="{% static '/assets/js/main.js ' %}"></script>
+    <script src="{% static '/assets/js/main.js' %}"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let popoverInstance = null;
+        let cartLoaded = false; // ✅ Prevents infinite API calls
+
+        function getCSRFToken() {
+          return document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("csrftoken="))
+            ?.split("=")[1];
+        }
+
+        function initializePopover() {
+          const cartButton = document.getElementById("cartButton");
+          if (cartButton) {
+            popoverInstance = new bootstrap.Popover(cartButton, {
+              html: true,
+              content:
+                '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>',
+            });
+
+            cartButton.addEventListener("shown.bs.popover", function () {
+              if (!cartLoaded) {
+                // ✅ Prevents redundant API calls
+                fetchCartData();
+                cartLoaded = true;
+              }
+            });
+
+            cartButton.addEventListener("hidden.bs.popover", function () {
+              cartLoaded = false; // ✅ Reset flag when popover is closed
+            });
+          }
+        }
+
+        function fetchCartData() {
+          $.ajax({
+            url: "/api/cart/info/",
+            type: "GET",
+            success: function (response) {
+              renderCartContent(response);
+            },
+            error: function () {
+              renderCartContent({ total_items: 0, items: [], total_amount: 0 });
+            },
+          });
+        }
+
+        function renderCartContent(cartData) {
+          const cartButton = document.getElementById("cartButton");
+          if (!cartButton) return;
+
+          document.getElementById("cart").textContent =
+            cartData.total_items || 0;
+
+          let content = `<div class="cart-popover">`;
+
+          if (!cartData.items || cartData.items.length === 0) {
+            content += `<div class="text-center p-3">Your cart is empty</div>`;
+          } else {
+            content += `
+                    <div class="cart-items">
+                        ${cartData.items
+                          .map(
+                            (item) => `
+                            <div class="cart-item mb-2">
+                                <div class="item-header d-flex justify-content-between">
+                                    <div class="item-name">${
+                                      item.product_name
+                                    }</div>
+                                    <button class="btn btn-sm btn-link text-danger remove-item" 
+                                            onclick="removeFromCart(${
+                                              item.product_id
+                                            })">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <div class="price-info">
+                                        <span class="price">₹${
+                                          item.sale_price || item.price
+                                        }</span>
+                                        <span class="quantity">× ${
+                                          item.quantity
+                                        }</span>
+                                    </div>
+                                    <div class="quantity-controls">
+                                        <button class="btn btn-sm btn-outline-secondary" 
+                                                onclick="updateQuantity(${
+                                                  item.product_id
+                                                }, ${
+                              item.quantity - 1
+                            })">-</button>
+                                        <span class="mx-2">${
+                                          item.quantity
+                                        }</span>
+                                        <button class="btn btn-sm btn-outline-secondary" 
+                                                onclick="updateQuantity(${
+                                                  item.product_id
+                                                }, ${
+                              item.quantity + 1
+                            })">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                    <div class="cart-footer mt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Total:</strong>
+                            <strong>₹${cartData.total_amount}</strong>
+                        </div>
+                        <div class="cart-actions">
+                            <a href="/checkout/" class="btn btn-success btn-sm w-100 mb-2">Checkout</a>
+                            <button onclick="clearCart()" class="btn btn-outline-danger btn-sm w-100">Clear Cart</button>
+                        </div>
+                    </div>`;
+          }
+          content += `</div>`;
+
+          if (popoverInstance) {
+            popoverInstance.setContent({ ".popover-body": content });
+          }
+        }
+
+        window.updateQuantity = function (productId, newQuantity) {
+          $.ajax({
+            url: "/api/cart/update/",
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            data: { product_id: productId, quantity: newQuantity },
+            success: function (response) {
+              cartLoaded = false; // ✅ Reset flag to fetch updated cart
+              renderCartContent(response);
+            },
+          });
+        };
+
+        window.clearCart = function () {
+          $.ajax({
+            url: "/api/cart/clear/",
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            success: function () {
+              cartLoaded = false; // ✅ Reset flag to fetch updated cart
+              renderCartContent({ total_items: 0, items: [], total_amount: 0 });
+            },
+          });
+        };
+
+        window.removeFromCart = function (productId) {
+          $.ajax({
+            url: "/api/cart/remove/",
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            data: { product_id: productId },
+            success: function (response) {
+              cartLoaded = false;
+              renderCartContent(response);
+            },
+          });
+        };
+
+        document.addEventListener("click", function (e) {
+          const cartButton = document.getElementById("cartButton");
+          if (!cartButton) return;
+
+          const popover = bootstrap.Popover.getInstance(cartButton);
+          if (popover && !e.target.closest("#cartButton, .popover")) {
+            popover.hide();
+          }
+        });
+
+        initializePopover();
+        fetchCartData();
+      });
+    </script>
+
+    <style>
+      .cart-popover {
+        min-width: 250px;
+        max-width: 350px;
+        padding: 15px;
+      }
+
+      .cart-item {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.3s;
+      }
+
+      .cart-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      .item-header {
+        align-items: start;
+      }
+
+      .item-name {
+        font-weight: 500;
+        font-size: 0.9rem;
+        flex: 1;
+        padding-right: 10px;
+      }
+
+      .remove-item {
+        padding: 0;
+        color: #dc3545;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+      }
+
+      .remove-item:hover {
+        opacity: 1;
+        color: #dc3545;
+      }
+
+      .price-info {
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      .quantity-controls {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 4px;
+        padding: 2px;
+      }
+
+      .quantity-controls button {
+        padding: 2px 6px;
+        font-size: 0.8rem;
+      }
+
+      .quantity-controls .mx-2 {
+        min-width: 20px;
+        text-align: center;
+      }
+
+      .cart-footer {
+        border-top: 2px solid #eee;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+
+      .cart-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .btn-cart-nav {
+        padding: 8px 15px;
+        border: none;
+        background: none;
+        color: inherit;
+      }
+
+      .btn-cart-nav:hover {
+        color: #e74c3c;
+      }
+    </style>
+    {% csrf_token %}
   </body>
 </html>

@@ -1,0 +1,12 @@
+<h2>Appointment Confirmation</h2>
+<p>Dear {{ appointment.customer_name }},</p>
+<p>Your appointment has been scheduled with {{ service.service_name }}.</p>
+<p>
+  <strong>Date:</strong> {{ appointment.appointment_date }}<br />
+  <strong>Time:</strong> {{ appointment.appointment_time }}
+</p>
+<p>
+  <strong>Service Provider:</strong> {{ service.provider_name }}<br />
+  <strong>Location:</strong> {{ service.address }}
+</p>
+<p>If you need to make any changes, please contact us.</p>

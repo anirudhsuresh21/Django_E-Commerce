@@ -1,6 +1,4 @@
-{% extends 'base.html' %} {% block title %}{{ service.service_name }}
-{% endblock title %}
-{% block body %}
+{% extends 'base.html' %} {% block title %}{{ service.service_name }} {% endblock title %} {% block body %}
 <div class="container my-4">
   <div class="service-detail-card">
     <div class="service-header">
@@ -87,22 +85,101 @@
       </a>
       {% endfor %}
     </div>
-    {% endif %} {% if user.is_authenticated %}
-    <div class="appointment-form">
-      <h3>Book Appointment</h3>
-      <form
-        method="POST"
-        action="{% url 'book_appointment' service.service_id %}"
-      >
-        {% csrf_token %}
-        <button type="submit" class="btn-book">Book Now</button>
-      </form>
-    </div>
-    {% else %}
-    <div class="login-prompt">
-      <p>Please <a href="{% url 'login' %}">login</a> to book an appointment</p>
-    </div>
     {% endif %}
+    <div class="booking-section">
+      <button class="btn-book" onclick="openBookingPopup()">
+        Book Appointment
+      </button>
+    </div>
+
+    <!-- Booking Popup -->
+    <div id="bookingPopup" class="popup-overlay">
+      <div class="popup-content">
+        <span class="close-popup" onclick="closeBookingPopup()">&times;</span>
+        <h3>Book Appointment</h3>
+        <form
+          id="appointmentForm"
+          method="POST"
+          action="/service/{{ service.service_id }}/"
+        >
+          {% csrf_token %}
+          <div class="form-group">
+            <input
+              type="hidden"
+              name="service_id"
+              value="{{ service.service_id }}"
+            />
+            <label>Name</label>
+            <input
+              type="text"
+              name="customer_name"
+              required
+              value="{{ user.get_full_name }}"
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="customer_email"
+              required
+              value="{{ user.email }}"
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Phone</label>
+            <input
+              type="tel"
+              name="customer_phone"
+              required
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Preferred Date</label>
+            <input
+              type="date"
+              name="appointment_date"
+              required
+              class="form-control"
+              min="{{ today|date:'Y-m-d' }}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Preferred Time</label>
+            <select name="appointment_time" required class="form-control">
+              <option value="">Select Time</option>
+              <option value="09:00">9:00 AM</option>
+              <option value="10:00">10:00 AM</option>
+              <option value="11:00">11:00 AM</option>
+              <option value="12:00">12:00 PM</option>
+              <option value="14:00">2:00 PM</option>
+              <option value="15:00">3:00 PM</option>
+              <option value="16:00">4:00 PM</option>
+              <option value="17:00">5:00 PM</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Special Requests</label>
+            <textarea
+              name="special_requests"
+              class="form-control"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Confirm Booking</button>
+        </form>
+      </div>
+    </div>
+    <div class="login-prompt"></div>
   </div>
 </div>
 
@@ -253,5 +330,139 @@
   .social-link:hover {
     color: #e74c3c;
   }
+
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .popup-content {
+    position: relative;
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.4s ease;
+  }
+
+  .close-popup {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s;
+  }
+
+  .close-popup:hover {
+    color: #e74c3c;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-weight: 500;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+
+  .form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 1rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .btn-submit:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 </style>
+
+<script>
+  function openBookingPopup() {
+    document.getElementById("bookingPopup").style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeBookingPopup() {
+    document.getElementById("bookingPopup").style.display = "none";
+    document.body.style.overflow = "auto";
+  }
+
+  // Close popup when clicking outside
+  window.onclick = function (event) {
+    var popup = document.getElementById("bookingPopup");
+    if (event.target == popup) {
+      closeBookingPopup();
+    }
+  };
+
+  // Form validation
+  document.getElementById("appointmentForm").onsubmit = function (e) {
+    var date = new Date(
+      document.querySelector('input[name="appointment_date"]').value
+    );
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (date < today) {
+      e.preventDefault();
+      alert("Please select a future date");
+      return false;
+    }
+    return true;
+  };
+</script>
 {% endblock body %}

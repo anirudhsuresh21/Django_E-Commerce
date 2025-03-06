@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render,redirect, get_object_or_404
 from ecommerceapp.models import Contact,Product,OrderUpdate,Orders, Services, ServiceAppointments
 from math import ceil
@@ -14,6 +15,9 @@ from datetime import date
 import json
 import re
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from .models import Cart, Product
+
 # from models import Orders
 #from PayTm import Checksum
 # Create your views here.
@@ -52,92 +56,62 @@ def about(request):
 
 def checkout(request):
     if not request.user.is_authenticated:
-        messages.warning(request,"Login & Try Again")
+        messages.warning(request, "Login & Try Again")
         return redirect('/auth/login')
 
-    if request.method=="POST":
-        items_json = request.POST.get('itemsJson', '')
-        name = request.POST.get('name', '')
-        amount = request.POST.get('amt')
-        email = request.POST.get('email', '')
-        address1 = request.POST.get('address1', '')
-        address2 = request.POST.get('address2','')
-        city = request.POST.get('city', '')
-        state = request.POST.get('state', '')
-        zip_code = request.POST.get('zip_code', '')
-        phone = request.POST.get('phone', '')
-        item =""
-        
-        # json_string = '{"pr6":[1,"APPLE iPhone 13","59999"]}'
+    # Get cart items for the user
+    cart_items = Cart.objects.filter(user_id=request.user.id)
+    cart_total = sum(item.total_price for item in cart_items)
 
-        # Parse the JSON string into a Python dictionary
-        data = json.loads(items_json)
+    if request.method == "POST":
+        # Process the order
+        try:
+            order = Orders.objects.create(
+                items_json=", ".join([item.product_name for item in cart_items]),
+                amount=cart_total,
+                name=request.POST.get('name'),
+                email=request.POST.get('email'),
+                address1=request.POST.get('address1'),
+                address2=request.POST.get('address2'),
+                city=request.POST.get('city'),
+                state=request.POST.get('state'),
+                zip_code=request.POST.get('zip_code'),
+                phone=request.POST.get('phone')
+            )
+            
+            # Generate order ID
+            oid = f"{order.order_id}WeShopCart"
+            order.oid = oid
+            order.or_id = oid
+            order.save()
 
-        # Iterate through all key-value pairs in the dictionary
-        for key, value in data.items():
-            identifier = value[0] if isinstance(value, list) and len(value) > 0 else None
-            name1 = value[1] if isinstance(value, list) and len(value) > 1 else None
-            price = value[2] if isinstance(value, list) and len(value) > 2 else None
+            # Create order update
+            OrderUpdate.objects.create(
+                order_id=order.order_id,
+                update_desc="The order has been placed",
+                or_id=oid,
+                email=request.user.username
+            )
 
-            print(f"Key: {key}")
-            print(f"Identifier: {identifier}")
-            print(f"Name: {name1}")
-            item = name1
-            print(f"Price: {price}")
+            # Clear the cart after successful order
+            cart_items.delete()
 
-        Order = Orders(items_json=item,name=name,amount=amount, email=email, address1=address1,address2=address2,city=city,state=state,zip_code=zip_code,phone=phone)
-        Order.save()
-        update = OrderUpdate(order_id=Order.order_id,update_desc="The order has been placed")
-        update.save()
-        id = Order.order_id
-        oid=str(id)+"WeShopCart"
-        
-        print(amount)
-        filter2 = Orders.objects.filter(order_id=Order.order_id)
-        
-        for post1 in filter2:
-            post1.oid = oid
-            post1.or_id = oid
-            post1.save()
+            return render(request, 'gateway.html', {
+                'dict1': {
+                    'ORDER_ID': oid,
+                    'TXN_AMOUNT': str(cart_total)
+                }
+            })
 
-        filter3 = OrderUpdate.objects.filter(order_id=Order.order_id)
-        
-        for post3 in filter3:
-            post3.or_id = oid
-            post3.email = email
-            post3.save()
-        
-        thank = True
-        # id = Order.order_id
-        # oid=str(id)+"WeShopCart"
-        # Order = Orders(or_id=oid)
-        # Order.save()
-        dict1 = {
-            'ORDER_ID': oid,
-            'TXN_AMOUNT': str(amount)
-        }
- #PAYMENT INTEGRATION
+        except Exception as e:
+            messages.error(request, f"Error processing order: {str(e)}")
+            return redirect('checkout')
 
-        # id = Order.order_id
-        # oid=str(id)+"ShopyCart"
-        # param_dict = {
-
-        #     'MID':keys.MID,
-        #     'ORDER_ID': oid,
-        #     'TXN_AMOUNT': str(amount),
-        #     'CUST_ID': email,
-        #     'INDUSTRY_TYPE_ID': 'Retail',
-        #     'WEBSITE': 'WEBSTAGING',
-        #     'CHANNEL_ID': 'WEB',
-        #     'CALLBACK_URL': 'http://127.0.0.1:8000/handlerequest/',
-
-        # }
-        # param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(param_dict, MERCHANT_KEY)
-        return render(request, 'gateway.html',{'dict1':dict1})
-    
-        
-    return render(request, 'checkout.html')
-
+    context = {
+        'cart_items': cart_items,
+        'cart_total': cart_total
+    }
+    return render(request, "checkout.html", context)
 
 def paytm(request):
     if request.method == "POST":
@@ -243,7 +217,7 @@ def pay(request):
             'list' : list          
 
         })
-        send_mail(email_subject,message,settings.EMAIL_HOST_USER,['achariruia@gmail.com'])
+        send_mail(email_subject,message,settings.EMAIL_HOST_USER,[user])
 
         data = {
             'oid': or_id,
@@ -260,7 +234,7 @@ def profile(request):
         return redirect('/auth/login')
     currentuser=request.user.username
     print(currentuser)
-    items=Orders.objects.filter(email="ani@gmail.com")
+    items=Orders.objects.filter(email=currentuser)
     print(items)
     myid=""
 
@@ -290,21 +264,95 @@ def privacy(request):
     return render(request,'privacy.html')
 
 def service_detail(request, service_id):
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.warning(request,"Login & Try Again")
+            return redirect('/auth/login')
+        try:
+            service_id=request.POST.get('service_id')
+            service = get_object_or_404(Services, service_id=service_id)
+            
+            appointment = ServiceAppointments.objects.create(
+                user_id=request.user.id,
+                service=service,  # This is now properly handled
+                service_name=service.service_name,
+                appointment_date=request.POST.get('appointment_date'),
+                appointment_time=request.POST.get('appointment_time'),
+                customer_name=request.POST.get('customer_name'),
+                customer_email=request.POST.get('customer_email'),
+                customer_phone=request.POST.get('customer_phone'),
+                special_requests=request.POST.get('special_requests', '')
+            )
+            
+            # Send email notification
+            subject = f'Appointment Confirmation - {service.service_name}'
+            message = render_to_string('email/appointment_confirmation.html', {
+                'appointment': appointment,
+                'service': service,
+            })
+            
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [appointment.customer_email],
+                html_message=message,
+            )
+            
+            messages.success(request, 'Appointment booked successfully! Check your email for confirmation.')
+            
+        except Exception as e:
+            messages.error(request, f'Error booking appointment: {str(e)}')
+            
+        return redirect('service_detail', service_id=service_id)
     service = get_object_or_404(Services, service_id=service_id)
     services = Services.objects.all()
     return render(request, 'service_detail.html', {'service': service, 'services': services})
 
-@login_required
-def book_appointment(request, service_id):
+def book_appointment(request):
+    if not request.user.is_authenticated:
+        messages.warning(request,"Login & Try Again")
+        return redirect('/auth/login')
     if request.method == 'POST':
-        service = get_object_or_404(Services, service_id=service_id)
-        appointment = ServiceAppointments(
-            user_id=request.user.id,
-            service_name=service.service_name
-        )
-        appointment.save()
-        messages.success(request, 'Appointment booked successfully!')
+        try:
+            service_id=request.POST.get('service_id')
+            service = get_object_or_404(Services, service_id=service_id)
+            
+            appointment = ServiceAppointments.objects.create(
+                user_id=request.user.id,
+                service=service,  # This is now properly handled
+                service_name=service.service_name,
+                appointment_date=request.POST.get('appointment_date'),
+                appointment_time=request.POST.get('appointment_time'),
+                customer_name=request.POST.get('customer_name'),
+                customer_email=request.POST.get('customer_email'),
+                customer_phone=request.POST.get('customer_phone'),
+                special_requests=request.POST.get('special_requests', '')
+            )
+            
+            # Send email notification
+            subject = f'Appointment Confirmation - {service.service_name}'
+            message = render_to_string('email/appointment_confirmation.html', {
+                'appointment': appointment,
+                'service': service,
+            })
+            
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [appointment.customer_email],
+                html_message=message,
+            )
+            
+            messages.success(request, 'Appointment booked successfully! Check your email for confirmation.')
+            
+        except Exception as e:
+            messages.error(request, f'Error booking appointment: {str(e)}')
+            
         return redirect('service_detail', service_id=service_id)
+    
+    return redirect('service_detail', service_id=service_id)
 
 def services_list(request):
     """View to display all available services"""
@@ -316,8 +364,174 @@ def product_detail(request, product_id):
     return render(request, 'product_detail.html', {'product': product})
 
 
+def product_api(request, product_id):
+    try:
+        product = Product.objects.get(product_id=product_id)
+        sizes = []
+        if product.sizes_available:
+            if isinstance(product.sizes_available, str):
+                # If it's a string, split by comma and clean up
+                sizes = [size.strip() for size in product.sizes_available.split(',') if size.strip()]
+            elif isinstance(product.sizes_available, (list, tuple)):
+                # If it's already a list/tuple
+                sizes = list(product.sizes_available)
+            else:
+                # Default sizes if nothing else works
+                sizes = ['S', 'M', 'L']
+
+        data = {
+            'id': product.product_id,
+            'product_name': product.product_name,
+            'price': str(product.price),
+            'sale_price': str(product.sale_price) if product.sale_price else None,
+            'discount_percentage': product.discount_percentage,
+            'description': product.description,
+            'main_image': str(product.main_image),
+            'image_2': str(product.image_2) if product.image_2 else None,
+            'image_3': str(product.image_3) if product.image_3 else None,
+            'image_4': str(product.image_4) if product.image_4 else None,
+            'fabric': product.fabric,
+            'work_type': product.work_type,
+            'stock': product.stock,
+            'category': product.get_category_display(),
+            'style': product.style,
+            'occasion_type': product.occasion_type,
+            'sizes_available': sizes,
+            'custom_sizing_available': product.custom_sizing_available,
+            # 'delivery_time': product.delivery_time,
+            'alteration_available': product.alteration_available,
+        }
+        print("Sizes being sent:", sizes)  # Debug print
+        return JsonResponse(data)
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404)
+
+
 def mens(request):
     return render(request, 'mens.html')
 
 def womens(request):
     return render(request, 'women.html')
+
+def mens_collection(request):
+    products = Product.objects.filter(category='GROOM').order_by('-created_at')
+    context = {
+        'products': products,
+        'category_name': 'Groom Collection',
+        'category_description': 'Explore our exclusive collection for the perfect groom'
+    }
+    return render(request, 'collection.html', context)
+
+def womens_collection(request):
+    products = Product.objects.filter(category='BRIDE').order_by('-created_at')
+    context = {
+        'products': products,
+        'category_name': 'Bridal Collection',
+        'category_description': 'Discover your dream wedding attire'
+    }
+    print("Products being sent:", products)  # Debug print
+    return render(request, 'collection.html', context)
+
+@login_required
+@require_POST
+def cart_add(request):
+    try:
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity', 1))
+        
+        product = Product.objects.get(product_id=product_id)
+        
+        # Check if item already exists in cart
+        cart_item, created = Cart.objects.get_or_create(
+            user_id=request.user.id,
+            product_id=product_id,
+            defaults={
+                'product_name': product.product_name,
+                'price': product.price,
+                'sale_price': product.sale_price,
+                'quantity': quantity
+            }
+        )
+        
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+            
+        return JsonResponse(get_cart_data(request.user.id))
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+@require_POST
+def cart_remove(request):
+    try:
+        product_id = request.POST.get('product_id')
+        Cart.objects.filter(user_id=request.user.id, product_id=product_id).delete()
+        return JsonResponse(get_cart_data(request.user.id))
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+@require_POST
+def cart_update(request):
+    try:
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity'))
+        
+        cart_item = Cart.objects.get(user_id=request.user.id, product_id=product_id)
+        
+        if quantity <= 0:
+            cart_item.delete()
+        else:
+            cart_item.quantity = quantity
+            cart_item.save()
+            
+        return JsonResponse(get_cart_data(request.user.id))
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+@require_POST
+def cart_clear(request):
+    try:
+        Cart.objects.filter(user_id=request.user.id).delete()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+def cart_info(request):
+    try:
+        cart_data = get_cart_data(request.user.id)
+        print("Cart data being sent:", cart_data)  # Debug print
+        return JsonResponse(cart_data)
+    except Exception as e:
+        print("Error in cart_info:", str(e))  # Debug print
+        return JsonResponse({
+            'error': str(e),
+            'total_items': 0,
+            'items': [],
+            'total_amount': 0
+        })
+
+def get_cart_data(user_id):
+    try:
+        cart_items = Cart.objects.filter(user_id=user_id)
+        total_amount = sum(item.total_price for item in cart_items)
+        
+        data = {
+            'total_items': cart_items.count(),
+            'total_amount': float(total_amount),
+            'items': [{
+                'product_id': item.product_id,
+                'product_name': item.product_name,
+                'quantity': item.quantity,
+                'price': float(item.price),
+                'sale_price': float(item.sale_price) if item.sale_price else None,
+                'total_price': float(item.total_price)
+            } for item in cart_items]
+        }
+        return data
+    except Exception as e:
+        print("Error in get_cart_data:", str(e))
+        raise

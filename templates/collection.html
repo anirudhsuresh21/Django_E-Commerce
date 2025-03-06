@@ -1,111 +1,127 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Home {% endblock title %} {% block content %}
-<a href="index.html" class="logo"
-  ><img
-    height="150px"
-    src="{% static '/assets/img/foreverfinds.png' %}"
-    alt=""
-    class="img-fluid"
-    style="max-height: 150px; margin: 10px 0"
-/></a>
-{% endblock content %} {% block body %}
-
-<!-- ======= Portfolio Section ======= -->
-<section id="portfolio" class="portfolio">
+{% extends 'base.html' %} {% load static %} {% block title %}{{ category_name }}
+- Forever Finds{% endblock title %} {% block body %}
+<div class="collection-hero">
   <div class="container">
-    <div class="section-title">
-      <h2>Welcome to our Shop</h2>
-      <h4>Check our <span>Products</span></h4>
-    </div>
+    <h1>{{ category_name }}</h1>
+    <p>{{ category_description }}</p>
+  </div>
+</div>
 
-    {% for product, range, nSlides in allProds %}
-    <br />
-    <h3
-      class="my-3 text-center text-success bg-light border border-success rounded"
-    >
-      {{product.0.category}} Flash Sale
-    </h3>
+<div class="container my-4">
+  <div class="row">
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+      <div class="product-card">
+        {% if product.sale_price %}
+        <div class="sale-badge">
+          <span>{{ product.discount_percentage }}% OFF</span>
+        </div>
+        {% endif %}
 
-    <div class="container">
-      <div class="row">
-        {% for i in product %}
-        <div class="col-md-3 mt-3">
-          <div class="product-card">
-            {% if i.sale_price %}
-            <div class="sale-badge">
-              <span>{{ i.discount_percentage }}% OFF</span>
+        <div class="product-image">
+          <img
+            src="/media/{{ product.main_image }}"
+            alt="{{ product.product_name }}"
+            class="card-img-top"
+          />
+        </div>
+
+        <div class="product-details">
+          <div class="category-tag">{{ product.get_category_display }}</div>
+          <h5 class="product-title" id="namepr{{product.product_id}}">
+            {{product.product_name}}
+          </h5>
+
+          <div class="price-section">
+            {% if product.sale_price %}
+            <div class="price-wrap">
+              <span class="original-price">₹{{product.price}}</span>
+              <h6 class="product-price">
+                ₹<span id="pricepr{{product.product_id}}"
+                  >{{product.sale_price}}</span
+                >
+              </h6>
             </div>
+            {% else %}
+            <h6 class="product-price">
+              ₹<span id="pricepr{{product.product_id}}">{{product.price}}</span>
+            </h6>
+            {% endif %}
+          </div>
+
+          <div class="product-meta">
+            {% if product.occasion_type %}
+            <span class="occasion">{{ product.occasion_type }}</span>
+            {% endif %} {% if product.custom_sizing_available %}
+            <span class="custom-size">
+              <i class="fas fa-ruler"></i> Custom Size
+            </span>
+            {% endif %}
+          </div>
+
+          <div class="button-group" id="divpr{{product.product_id}}">
+            {% if product.stock > 0 %}
+            <span id="divpr{{product.product_id}}" class="divpr">
+              <button
+                id="pr{{product.product_id}}"
+                class="btn-cart cart"
+                onclick="addToCart({{product.product_id}})"
+              >
+                <i class="fa-solid fa-cart-shopping"></i> Add To Cart
+              </button>
+            </span>
+            {% else %}
+            <button class="btn-out-of-stock" disabled>Out of Stock</button>
             {% endif %}
 
-            <div class="product-image">
-              <img
-                src="/media/{{ i.main_image }}"
-                alt="{{i.product_name}}"
-                class="card-img-top"
-              />
-            </div>
-
-            <div class="product-details">
-              <div class="category-tag">{{ i.get_category_display }}</div>
-              <h5 class="product-title" id="namepr{{i.product_id}}">
-                {{i.product_name}}
-              </h5>
-
-              <div class="price-section">
-                {% if i.sale_price %}
-                <div class="price-wrap">
-                  <span class="original-price">₹{{i.price}}</span>
-                  <h6 class="product-price">
-                    ₹<span id="pricepr{{i.product_id}}">{{i.sale_price}}</span>
-                  </h6>
-                </div>
-                {% else %}
-                <h6 class="product-price">
-                  ₹<span id="pricepr{{i.product_id}}">{{i.price}}</span>
-                </h6>
-                {% endif %}
-              </div>
-
-              {% if i.occasion_type or i.custom_sizing_available %}
-              <div class="product-meta">
-                {% if i.occasion_type %}
-                <span class="occasion">{{ i.occasion_type }}</span>
-                {% endif %} {% if i.custom_sizing_available %}
-                <span class="custom-size"
-                  ><i class="fas fa-ruler"></i> Custom Size</span
-                >
-                {% endif %}
-              </div>
-              {% endif %}
-
-              <div class="button-group" id="divpr{{i.product_id}}">
-                {% if i.stock > 0 %}
-                <span id="divpr{{i.id}}" class="divpr">
-                  <button id="pr{{i.product_id}}" class="btn-cart cart">
-                    <i class="fa-solid fa-cart-shopping"></i> Add To Cart
-                  </button>
-                </span>
-                {% else %}
-                <button class="btn-out-of-stock" disabled>Out of Stock</button>
-                {% endif %}
-
-                <button
-                  class="btn-view"
-                  onclick="showProductDetails({{ i.product_id }})"
-                >
-                  <i class="fa-solid fa-eye"></i> View
-                </button>
-              </div>
-            </div>
+            <button
+              class="btn-view"
+              onclick="showProductDetails({{product.product_id}})"
+            >
+              <i class="fa-solid fa-eye"></i> View
+            </button>
           </div>
         </div>
-        {% endfor %}
-        <br />
       </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center no-products">
+      <i class="fas fa-box-open"></i>
+      <p>No products available in this collection yet.</p>
     </div>
     {% endfor %}
   </div>
-</section>
-<!-- End Portfolio Section -->
+</div>
+
+<!-- Product Modal (Keep existing modal code) -->
+<div
+  class="modal fade"
+  id="productModal"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalProductTitle"></h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalProductContent">
+        <!-- Content will be loaded dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Keep existing scripts -->
 <script
   src="https://code.jquery.com/jquery-3.3.1.js"
   integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -411,37 +427,7 @@
   }
 </script>
 
-<!-- Add CSRF token -->
-{% csrf_token %}
-
-<!-- Product Details Modal -->
-<div
-  class="modal fade"
-  id="productModal"
-  tabindex="-1"
-  role="dialog"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalProductTitle"></h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="modalProductContent">
-        <!-- Content will be loaded dynamically -->
-      </div>
-    </div>
-  </div>
-</div>
-
+<!-- Keep existing styles -->
 <style>
   .product-card {
     border: 1px solid #e0e0e0;
@@ -638,4 +624,5 @@
     height: auto;
   }
 </style>
+
 {% endblock body %}

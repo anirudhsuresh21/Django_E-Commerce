@@ -194,12 +194,60 @@ class Services(models.Model):
 
 
 class ServiceAppointments(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled'),
+        ('COMPLETED', 'Completed')
+    ]
+
     appointment_id = models.AutoField(primary_key=True)
     user_id = models.CharField(max_length=100)
+    service = models.ForeignKey(
+        Services, 
+        on_delete=models.CASCADE,
+        related_name='appointments',
+        null=True  # Allow null temporarily for migration
+    )
     service_name = models.CharField(max_length=100)
-    timestamp = models.DateField(auto_now_add=True)
-    status = models.CharField(default="confirmed",max_length=25)
+    appointment_date = models.DateField(null=True)
+    appointment_time = models.TimeField(null=True)
+    customer_name = models.CharField(max_length=100)
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=15)
+    special_requests = models.TextField(null=True, blank=True)
+    status = models.CharField(
+        max_length=25,
+        choices=STATUS_CHOICES,
+        default='PENDING'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-appointment_date', '-appointment_time']
+
     def __str__(self):
-        return self.appointment_id
+        return f"{self.customer_name} - {self.service_name} ({self.appointment_date})"
+
+class Cart(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.CharField(max_length=100)  # Can be linked to a User model if authentication is used
+    product_id = models.IntegerField()  # Store the product ID instead of a ForeignKey
+    product_name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user_id} - {self.product_name} (x{self.quantity})"
+
+    @property
+    def total_price(self):
+        """Returns total price based on quantity"""
+        return self.quantity * (self.sale_price if self.sale_price else self.price)
+
+
 
 
