@@ -21,7 +21,7 @@ def signup(request):
         email=request.POST['email']
         password=request.POST['pass1']
         confirm_password=request.POST['pass2']
-        if not re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", password):
+        if not re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", password):
             messages.warning(request,"Password Should Contain atleast one small letter, one capital letter, a numeric character and a special character")
             return render(request,'signup.html')            
         elif password!=confirm_password:
