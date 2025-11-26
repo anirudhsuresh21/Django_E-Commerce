@@ -29,7 +29,9 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "django-e-commerce-jiek.onrender.com",
 ]
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://django-e-commerce-jiek.onrender.com',
+]
 
 
 # Application definition
