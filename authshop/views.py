@@ -41,7 +41,7 @@ def signup(request):
         email_subject="Activate Your Account"
         message=render_to_string('activate.html',{
             'user':user,
-            'domain':'127.0.0.1:8000',
+            'domain':'django-e-commerce-jiek.onrender.com',
             'uid':urlsafe_base64_encode(force_bytes(user.pk)),
             'token':generate_token.make_token(user)
 
@@ -108,7 +108,7 @@ class RequestResetEmailView(View):
             email_subject='[Reset Your Password]'
             message=render_to_string('reset-user-password.html',{
                 'user':user,
-                'domain':'127.0.0.1:8000',
+                'domain':'django-e-commerce-jiek.onrender.com',
                 'uid':urlsafe_base64_encode(force_bytes(user[0].pk)),
                 'token':PasswordResetTokenGenerator().make_token(user[0])
             })
