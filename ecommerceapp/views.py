@@ -1,36 +1,43 @@
-from django.http import JsonResponse
-from django.shortcuts import render,redirect, get_object_or_404
-from ecommerceapp.models import Contact,Product,OrderUpdate,Orders, Services, ServiceAppointments
+from django.shortcuts import render,redirect
+from ecommerceapp.models import Contact,Product,OrderUpdate,Orders
+from django.contrib import messages
 from math import ceil
 from ecommerceapp import keys
+from django.conf import settings
 MERCHANT_KEY=keys.MK
 import json
 from django.views.decorators.csrf import  csrf_exempt
 from PayTm import Checksum
 from django.contrib import messages
 from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
+from authshop.utils import TokenGenerator,generate_token
+from django.utils.encoding import force_bytes,force_str,DjangoUnicodeDecodeError
+from django.core.mail import EmailMessage
 from django.conf import settings
 from django.core.mail import send_mail
 from datetime import date
 import json
 import re
-from django.contrib.auth.decorators import login_required
 # from models import Orders
 #from PayTm import Checksum
 # Create your views here.
 
 def index(request):
     allProds = []
-    catprods = Product.objects.values('category', 'product_id')  # Changed from id to product_id
+    catprods = Product.objects.values('category','id')
+    print(catprods)
     cats = {item['category'] for item in catprods}
     for cat in cats:
-        prod = Product.objects.filter(category=cat)
-        n = len(prod)
+        prod= Product.objects.filter(category=cat)
+        n=len(prod)
         nSlides = n // 4 + ceil((n / 4) - (n // 4))
         allProds.append([prod, range(1, nSlides), nSlides])
 
-    params = {'allProds': allProds}
-    return render(request, "index.html", params)
+    params= {'allProds':allProds}
+
+    return render(request,"index.html",params)
+    #return render(request,"index.html")
 
 def contact(request):
     if request.method=="POST":
@@ -260,9 +267,7 @@ def profile(request):
         messages.warning(request,"Login & Try Again")
         return redirect('/auth/login')
     currentuser=request.user.username
-    print(currentuser)
     items=Orders.objects.filter(email=currentuser)
-    print(items)
     myid=""
 
     
@@ -279,7 +284,6 @@ def profile(request):
     #     print(j.update_desc)
   
     context ={"items":items}
-    print(context)
     # print(currentuser)
     return render(request,"profile.html",context)
 
@@ -289,171 +293,3 @@ def terms(request):
 
 def privacy(request):
     return render(request,'privacy.html')
-
-def service_detail(request, service_id):
-    if request.method == 'POST':
-        if not request.user.is_authenticated:
-            messages.warning(request,"Login & Try Again")
-            return redirect('/auth/login')
-        try:
-            service_id=request.POST.get('service_id')
-            service = get_object_or_404(Services, service_id=service_id)
-            
-            appointment = ServiceAppointments.objects.create(
-                user_id=request.user.id,
-                service=service,  # This is now properly handled
-                service_name=service.service_name,
-                appointment_date=request.POST.get('appointment_date'),
-                appointment_time=request.POST.get('appointment_time'),
-                customer_name=request.POST.get('customer_name'),
-                customer_email=request.POST.get('customer_email'),
-                customer_phone=request.POST.get('customer_phone'),
-                special_requests=request.POST.get('special_requests', '')
-            )
-            
-            # Send email notification
-            subject = f'Appointment Confirmation - {service.service_name}'
-            message = render_to_string('email/appointment_confirmation.html', {
-                'appointment': appointment,
-                'service': service,
-            })
-            
-            send_mail(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [appointment.customer_email],
-                html_message=message,
-            )
-            
-            messages.success(request, 'Appointment booked successfully! Check your email for confirmation.')
-            
-        except Exception as e:
-            messages.error(request, f'Error booking appointment: {str(e)}')
-            
-        return redirect('service_detail', service_id=service_id)
-    service = get_object_or_404(Services, service_id=service_id)
-    services = Services.objects.all()
-    return render(request, 'service_detail.html', {'service': service, 'services': services})
-
-def book_appointment(request):
-    if not request.user.is_authenticated:
-        messages.warning(request,"Login & Try Again")
-        return redirect('/auth/login')
-    if request.method == 'POST':
-        try:
-            service_id=request.POST.get('service_id')
-            service = get_object_or_404(Services, service_id=service_id)
-            
-            appointment = ServiceAppointments.objects.create(
-                user_id=request.user.id,
-                service=service,  # This is now properly handled
-                service_name=service.service_name,
-                appointment_date=request.POST.get('appointment_date'),
-                appointment_time=request.POST.get('appointment_time'),
-                customer_name=request.POST.get('customer_name'),
-                customer_email=request.POST.get('customer_email'),
-                customer_phone=request.POST.get('customer_phone'),
-                special_requests=request.POST.get('special_requests', '')
-            )
-            
-            # Send email notification
-            subject = f'Appointment Confirmation - {service.service_name}'
-            message = render_to_string('email/appointment_confirmation.html', {
-                'appointment': appointment,
-                'service': service,
-            })
-            
-            send_mail(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [appointment.customer_email],
-                html_message=message,
-            )
-            
-            messages.success(request, 'Appointment booked successfully! Check your email for confirmation.')
-            
-        except Exception as e:
-            messages.error(request, f'Error booking appointment: {str(e)}')
-            
-        return redirect('service_detail', service_id=service_id)
-    
-    return redirect('service_detail', service_id=service_id)
-
-def services_list(request):
-    """View to display all available services"""
-    services = Services.objects.all()
-    return render(request, 'services.html', {'services': services})
-
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, product_id=product_id)  # Changed from id to product_id
-    return render(request, 'product_detail.html', {'product': product})
-
-
-def product_api(request, product_id):
-    try:
-        product = Product.objects.get(product_id=product_id)
-        sizes = []
-        if product.sizes_available:
-            if isinstance(product.sizes_available, str):
-                # If it's a string, split by comma and clean up
-                sizes = [size.strip() for size in product.sizes_available.split(',') if size.strip()]
-            elif isinstance(product.sizes_available, (list, tuple)):
-                # If it's already a list/tuple
-                sizes = list(product.sizes_available)
-            else:
-                # Default sizes if nothing else works
-                sizes = ['S', 'M', 'L']
-
-        data = {
-            'id': product.product_id,
-            'product_name': product.product_name,
-            'price': str(product.price),
-            'sale_price': str(product.sale_price) if product.sale_price else None,
-            'discount_percentage': product.discount_percentage,
-            'description': product.description,
-            'main_image': str(product.main_image),
-            'image_2': str(product.image_2) if product.image_2 else None,
-            'image_3': str(product.image_3) if product.image_3 else None,
-            'image_4': str(product.image_4) if product.image_4 else None,
-            'fabric': product.fabric,
-            'work_type': product.work_type,
-            'stock': product.stock,
-            'category': product.get_category_display(),
-            'style': product.style,
-            'occasion_type': product.occasion_type,
-            'sizes_available': sizes,
-            'custom_sizing_available': product.custom_sizing_available,
-            # 'delivery_time': product.delivery_time,
-            'alteration_available': product.alteration_available,
-        }
-        print("Sizes being sent:", sizes)  # Debug print
-        return JsonResponse(data)
-    except Product.DoesNotExist:
-        return JsonResponse({'error': 'Product not found'}, status=404)
-
-
-def mens(request):
-    return render(request, 'mens.html')
-
-def womens(request):
-    return render(request, 'women.html')
-
-def mens_collection(request):
-    products = Product.objects.filter(category='GROOM').order_by('-created_at')
-    context = {
-        'products': products,
-        'category_name': 'Groom Collection',
-        'category_description': 'Explore our exclusive collection for the perfect groom'
-    }
-    return render(request, 'collection.html', context)
-
-def womens_collection(request):
-    products = Product.objects.filter(category='BRIDE').order_by('-created_at')
-    context = {
-        'products': products,
-        'category_name': 'Bridal Collection',
-        'category_description': 'Discover your dream wedding attire'
-    }
-    return render(request, 'collection.html', context)
