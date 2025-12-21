@@ -3,34 +3,191 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment</title>
+  <title>Payment Gateway</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-  {% comment %} <!-- <script>
-    window.onload = function() {
-        // Get the value from localStorage
-        var value = localStorage.getItem('orderid');
-        console.log(value);
-        // Display the value on the page
-        document.getElementsByName('id').value = value;
-      
-      };
-  </script> --> {% endcomment %}
-
-
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary-color: #ec4899;
+      --accent-color: #10b981;
+      --dark-bg: #0f172a;
+      --light-bg: #f8fafc;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .payment-container {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 48px;
+      max-width: 500px;
+      width: 100%;
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .payment-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .payment-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+    }
+    
+    .payment-icon i {
+      font-size: 36px;
+      color: white;
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+    
+    .payment-subtitle {
+      color: var(--text-light);
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .payment-info {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      border: 2px solid rgba(99, 102, 241, 0.2);
+    }
+    
+    .payment-info p {
+      margin: 0;
+      color: var(--text-light);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .payment-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    
+    .btn-custom {
+      flex: 1;
+      padding: 16px;
+      font-weight: 600;
+      font-size: 16px;
+      border-radius: 12px;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-success-custom {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-success-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    
+    .btn-danger-custom {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-danger-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+    
+    .demo-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
+<body>
     <form method="post" action="/payment-status/">
         {% csrf_token %}
         <input type="hidden" id="id" name="id" value='{{dict.oid}}'>
         <input type="hidden" name="amt" value='{{dict.amt}}'>
-        <div class="text-center">
-        <h1>Demo Payment Page</h1>
-        <h6>This is a demo payment window.<h6>
-        <h6 class="mb-2">You can choose whether to make this payment Succesful or not.</h6>
-        <button type="submit" class="btn btn-secondary me-3 mt-3" name="status" value="FAILURE"><i class="fas fa-times">&nbsp;&nbsp;Failure</i></button>
-        <button type="submit" class="btn btn-primary mt-3" name="status" value="SUCCESS"><i class="fas fa-check">&nbsp;&nbsp;Success</i></button>
-    </div>
-  </form>
+        
+        <div class="payment-container">
+          <div class="payment-header">
+            <div class="payment-icon">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <span class="demo-badge">Demo Mode</span>
+            <h1>Payment Gateway</h1>
+            <p class="payment-subtitle">Choose your payment outcome</p>
+          </div>
+          
+          <div class="payment-info">
+            <p style="margin-bottom: 12px;">This is a demonstration payment window. In production, this would connect to a real payment processor.</p>
+            <p>Please select whether to simulate a successful or failed payment.</p>
+          </div>
+          
+          <div class="payment-actions">
+            <button type="submit" class="btn-custom btn-danger-custom" name="status" value="FAILURE">
+              <i class="fas fa-times-circle"></i>
+              <span>Fail Payment</span>
+            </button>
+            <button type="submit" class="btn-custom btn-success-custom" name="status" value="SUCCESS">
+              <i class="fas fa-check-circle"></i>
+              <span>Success</span>
+            </button>
+          </div>
+        </div>
+    </form>
 </body>
 </html>

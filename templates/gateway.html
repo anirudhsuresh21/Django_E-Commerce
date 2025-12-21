@@ -4,72 +4,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Window</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-
-
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-{% comment %} <!-- <link rel="stylesheet" href= {% '1.css' %} >  --> {% endcomment %}
-{% comment %} <link href="{% static '/assets/vendor/bootstrap/css/bootstrap.min.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/bootstrap-icons/bootstrap-icons.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/boxicons/css/boxicons.min.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/glightbox/css/glightbox.min.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/remixicon/remixicon.css ' %}" rel="stylesheet">
-<link href="{% static '/assets/vendor/swiper/swiper-bundle.min.css ' %}" rel="stylesheet"> {% endcomment %}
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Payment Gateway</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
 <style>
-    body{
-        background: #f5f5f5
+    :root {
+      --primary-color: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary-color: #ec4899;
+      --accent-color: #10b981;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
     }
-    .rounded{
-        border-radius: 1rem
+    
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 40px 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .nav-pills .nav-link{
-        color: #555
+    
+    .payment-wrapper {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        animation: slideUp 0.5s ease-out;
     }
-    .nav-pills .nav-link.active{
-        color: white
-    }    
-    input[type="radio"]{
-        margin-right: 5px
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .bold{
-        font-weight:bol
+    
+    .payment-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 32px;
+        text-align: center;
+        color: white;
+    }
+    
+    .payment-header h3 {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    
+    .payment-amount {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 16px;
+        margin-top: 24px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .payment-amount h5 {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .nav-pills .nav-link {
+        color: var(--text-light);
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 12px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .nav-pills .nav-link:hover:not(.active) {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        padding: 12px 16px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .btn-payment {
+        background: linear-gradient(135deg, var(--accent-color) 0%, #059669 100%);
+        color: white;
+        padding: 14px 32px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-payment:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    
+    .input-group-text {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        color: var(--text-light);
+    }
+    
+    input[type="radio"] {
+        margin-right: 8px;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-color);
+    }
+    
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 16px 20px;
+        margin-bottom: 24px;
     }
 </style>
 </head>
 <body>
     <div class="container py-5">
-        <!-- For demo purpose -->
         <div class="row mb-4">
-            <div class="col-lg-8 mx-auto text-center">
-                <h3 class="display-6">Integrated Payment Gateway</h3>
+            <div class="col-lg-8 mx-auto">
                 {% for message in messages %}
-
                 <div class="alert alert-{{message.tags}} alert-dismissible fade show" id="msg" role="alert">
                     <strong>{{message}}</strong>
-                    {% comment %} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> {% endcomment %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 {% endfor %}
             </div>
-        </div> <!-- End -->
+        </div>
         <div class="row">
-            <div class="col-lg-6 mx-auto">
-                <div class="card ">
-                    <div class="card-header">
-                        <div class="bg-white shadow-sm pt-4 pl-2 pr-2 pb-2">
-                            <!-- Credit card form tabs -->
-                            <ul role="tablist" class="nav bg-light nav-pills rounded nav-fill mb-3">
-                                <li class="nav-item"> <a data-toggle="pill" href="#credit-card" class="nav-link active "> <i class="fas fa-credit-card mr-2"></i> Credit Card </a> </li>
-                                <li class="nav-item"> <a data-toggle="pill" href="#paypal" class="nav-link "> <i class="fa-brands fa-google-pay mr-1"></i> Google Pay </a> </li>
-                                <li class="nav-item"> <a data-toggle="pill" href="#net-banking" class="nav-link "> <i class="fas fa-mobile-alt mr-2"></i> Net Banking </a> </li>
-                            </ul>
+            <div class="col-lg-8 mx-auto">
+                <div class="payment-wrapper">
+                    <div class="payment-header">
+                        <h3><i class="fas fa-lock"></i> Secure Payment Gateway</h3>
+                        <p style="margin: 0; opacity: 0.9;">Your payment information is encrypted and secure</p>
+                        
+                        <div class="payment-amount">
+                            <h5><i class="fas fa-receipt"></i> Order #{{dict1.ORDER_ID}} - ₹{{dict1.TXN_AMOUNT}}</h5>
                         </div>
-                        <br> <!-- End -->
-                         <div class="card bg-primary mt-2 mb-2">
-                            <h5>Transaction for Rs.{{dict1.TXN_AMOUNT}} of Order id {{dict1.ORDER_ID}}</h5>
-                            </div> 
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="bg-light rounded p-3 mb-4">
+                            <ul role="tablist" class="nav nav-pills nav-fill mb-0">
+                                <li class="nav-item"> 
+                                    <a data-bs-toggle="pill" href="#credit-card" class="nav-link active"> 
+                                        <i class="fas fa-credit-card me-2"></i> Credit Card 
+                                    </a> 
+                                </li>
+                                <li class="nav-item"> 
+                                    <a data-bs-toggle="pill" href="#paypal" class="nav-link"> 
+                                        <i class="fa-brands fa-google-pay me-1"></i> Google Pay 
+                                    </a> 
+                                </li>
+                                <li class="nav-item"> 
+                                    <a data-bs-toggle="pill" href="#net-banking" class="nav-link"> 
+                                        <i class="fas fa-mobile-alt me-2"></i> Net Banking 
+                                    </a> 
+                                </li>
+                            </ul>
+                        </div> 
                         <!-- Credit card form content -->
                         <div class="tab-content">
                             <!-- credit card info-->
@@ -78,45 +202,48 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="id" value={{dict1.ORDER_ID}}>
                                     <input type="hidden" name="amt" value={{dict1.TXN_AMOUNT}}>
-                                    {% comment %} <input type="hidden" name="my_list[]" value="item3"> {% endcomment %}
-                                     {% comment %} <div class="card bg-primary mt-2 mb-2">
-                                    <h5>Transaction for Rs.{{dict.TXN_AMOUNT}} of Order id {{dict.ORDER_ID}}</h5>
-                                    </div>  {% endcomment %}
                                 
-                                    <h2>
-                                    <div class="form-group"> <label for="username">
-                                            <h6>Card Owner</h6> 
-                                        </label> <input type="text" name="username" placeholder="Card Owner Name (BLOCK LETTERS)" required class="form-control "> </div>
-                                    <div class="form-group"> <label for="cardNumber">
-                                            <h6>Card number</h6>
-                                        </label>
-                                        <div class="input-group"> <input  type="text" inputmode="numeric" id="cardNumber" name="cardNumber" placeholder="Valid card number" maxlength="19" class="form-control " required>
-                                            <div class="input-group-append"> <span class="input-group-text text-muted"> <i class="fab fa-cc-visa mx-1"></i> <i class="fab fa-cc-mastercard mx-1"></i> <i class="fab fa-cc-amex mx-1"></i> </span> </div>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label for="username">Card Owner Name</label>
+                                            <input type="text" name="username" placeholder="FULL NAME (AS ON CARD)" required class="form-control">
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-8">
-                                            <div class="form-group"> <label><span class="hidden-xs">
-                                                        <h6>Expiration Date</h6>
-                                                    </span></label>
-                                                <div class="input-group"> <select placeholder="MM" name="" class="form-control" required> 
-                                                    <option value="" selected disabled>--Month--</option>
-                                                            <option>01</option>
-                                                            <option>02</option>
-                                                            <option>03</option>
-                                                            <option>04</option>
-                                                            <option>05</option>
-                                                            <option>06</option>
-                                                            <option>07</option>
-                                                            <option>08</option>
-                                                            <option>09</option>
-                                                            <option>10</option>
-                                                            <option>11</option>
-                                                            <option>12</option></select>
-                                                    <select placeholder="YY" name="" class="form-control" required>
-                                                        <option value="" selected disabled>--Year--</option>
-                                                        <option>2022</option>
-                                                        <option>2023</option>
+                                        
+                                        <div class="col-12">
+                                            <label for="cardNumber">Card Number</label>
+                                            <div class="input-group">
+                                                <input type="text" inputmode="numeric" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" class="form-control" required>
+                                                <span class="input-group-text">
+                                                    <i class="fab fa-cc-visa me-1"></i>
+                                                    <i class="fab fa-cc-mastercard me-1"></i>
+                                                    <i class="fab fa-cc-amex"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-8">
+                                            <label>Expiration Date</label>
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <select name="expiry_month" class="form-select" required> 
+                                                        <option value="" selected disabled>Month</option>
+                                                        <option>01</option>
+                                                        <option>02</option>
+                                                        <option>03</option>
+                                                        <option>04</option>
+                                                        <option>05</option>
+                                                        <option>06</option>
+                                                        <option>07</option>
+                                                        <option>08</option>
+                                                        <option>09</option>
+                                                        <option>10</option>
+                                                        <option>11</option>
+                                                        <option>12</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6">
+                                                    <select name="expiry_year" class="form-select" required>
+                                                        <option value="" selected disabled>Year</option>
                                                         <option>2024</option>
                                                         <option>2025</option>
                                                         <option>2026</option>
@@ -126,120 +253,112 @@
                                                         <option>2030</option>
                                                         <option>2031</option>
                                                         <option>2032</option>
-                                                        <option>2033</option>
-                                                        <option>2034</option>
-                                                        <option>2035</option>
-                                                        <option>2036</option></select></div>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-4">
-                                            <div class="form-group mb-4"> <label data-toggle="tooltip" title="Three digit CV code on the back of your card">
-                                                    <h6>CVV <i class="fa fa-question-circle d-inline"></i></h6>
-                                                </label> <input type="password" id="cvv" required class="form-control"> </div>
+                                        
+                                        <div class="col-md-4">
+                                            <label>CVV</label>
+                                            <input type="password" name="cvv" placeholder="•••" maxlength="3" class="form-control" required>
+                                        </div>
+                                        
+                                        <div class="col-12 mt-4">
+                                            <button type="submit" class="btn btn-payment w-100">
+                                                <i class="fas fa-lock me-2"></i> Pay ₹{{dict1.TXN_AMOUNT}} Securely
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="col-12 text-center mt-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-shield-alt me-1"></i>
+                                                Your payment is secure and encrypted
+                                            </small>
                                         </div>
                                     </div>
-                                    <div class="card-footer">
-                                        {% comment %} <a href="/payment-stage"> {% endcomment %}
-                                            <button type="submit" class="subscribe btn btn-primary btn-block shadow-sm" onclick="validate()"> Confirm Payment </button>
-                                        {% comment %} </a> {% endcomment %}
                                 </form>
                             </div>
-                        </div> <!-- End -->
+                        <!-- End of credit card tab -->
+                        
                         <!-- Paypal info -->
                         <div id="paypal" class="tab-pane fade pt-3">
                             <form role="form" action="/payment-stage/" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="id" value={{dict1.ORDER_ID}}>
                                 <input type="hidden" name="amt" value={{dict1.TXN_AMOUNT}}>
-                            <div class="form-group"> <label for="username">
-                                <h6>Enter UPI ID</h6>
-                            </label> <input type="text" name="googlepay" placeholder="example@okbank" required class="form-control "> </div>
-                            <p> <button type="submit" class="btn btn-primary "><i class="fa-brands fa-google-pay mr-2"></i>Pay using UPI ID </button> </p>
-                            <p class="text-muted"> Note: After clicking on the button, you will be directed to a secure gateway for payment. After completing the payment process, you will be redirected back to the website to view details of your order. </p>
-                        </div> 
-                    </form>
-                    <!-- End -->
-                        <!-- bank transfer info -->
+                                <div class="mb-3">
+                                    <label for="googlepay">Enter UPI ID</label>
+                                    <input type="text" name="googlepay" placeholder="yourname@okbank" required class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-payment w-100">
+                                    <i class="fa-brands fa-google-pay me-2"></i>Pay using UPI ID
+                                </button>
+                                <p class="text-muted mt-3 small">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    After clicking, you'll be directed to a secure gateway. Once payment is complete, you'll return here to view your order details.
+                                </p>
+                            </form>
+                        </div>
+                        <!-- Net banking tab -->
                         <div id="net-banking" class="tab-pane fade pt-3">
                             <form role="form" action="/payment-stage/" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="id" value={{dict1.ORDER_ID}}>
                                 <input type="hidden" name="amt" value={{dict1.TXN_AMOUNT}}>
-                            <div class="form-group "> <label for="Select Your Bank">
-                                    <h6>Select your Bank</h6>
-                                </label> <select class="form-control" id="ccmonth">
-                                    <option value="" selected disabled>--Please select your Bank--</option>
-                                    <option>HDFC Bank</option>
-                                    <option>SBI Bank</option>
-                                    <option>AXIS Bank</option>
-                                    <option>BOI Bank</option>
-                                    <option>PNB Bank</option>
-                                    <option>KOTAK MAHINDRA Bank</option>
-                                    <option>ICICI Bank</option>
-                                    <option>UNION Bank</option>
-                                    <option>BARODA Bank</option>
-                                    <option>IDBI Bank</option>
-                                </select> </div>
-                            <div class="form-group">
-                                <p> <button type="submit" class="btn btn-primary "><i class="fas fa-mobile-alt mr-2"></i> Proceed Payment</button> </p>
-                            </div>
-                            <p class="text-muted">Note: After clicking on the button, you will be directed to a secure gateway for payment. After completing the payment process, you will be redirected back to the website to view details of your order. </p>
+                                
+                                <div class="mb-3">
+                                    <label for="bank-select">Select Your Bank</label>
+                                    <select class="form-select" id="bank-select" name="bank" required>
+                                        <option value="" selected disabled>Choose your bank</option>
+                                        <option>HDFC Bank</option>
+                                        <option>State Bank of India</option>
+                                        <option>AXIS Bank</option>
+                                        <option>Bank of India</option>
+                                        <option>Punjab National Bank</option>
+                                        <option>Kotak Mahindra Bank</option>
+                                        <option>ICICI Bank</option>
+                                        <option>Union Bank</option>
+                                        <option>Bank of Baroda</option>
+                                        <option>IDBI Bank</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-payment w-100">
+                                    <i class="fas fa-university me-2"></i>Proceed to Bank
+                                </button>
+                                
+                                <p class="text-muted mt-3 small">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    You'll be redirected to your bank's secure page to complete the transaction.
+                                </p>
+                            </form>
                         </div>
-                    </form> <!-- End -->
-                        <!-- End -->
+                    </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>    
-    //     $(function() {
-    //   $('[data-toggle= "\"]').tooltip()
-    // })
-    {% comment %} let cNumber = document.getElementById('cardNumber');
-    cNumber.addEventListener('input', function (e) {
-    let num = cNumber.value;
-    let newValue = '';
-    num = num.replace(/\s/g, '');
-    for (var i = 0; i < num.length; i++) {
-        if (i % 4 == 0 && i > 0) newValue = newValue.concat(' ');
-        newValue = newValue.concat(num[i]);
-        cNumber.value = newValue;
-    }
-}) {% endcomment %}
+        setTimeout(() => {
+            let msg = document.getElementById('msg');
+            if (msg) {
+                msg.style.display = 'none';
+            }
+        }, 3000);
 
-setTimeout(() => {
-    let get = document.getElementById('msg');
-    get.style.display = 'none';
-    }, 3000);
-
-    const numericField = document.getElementById("cardNumber");
-
-        // Add an input event listener to the text field
-        numericField.addEventListener("input", function () {
-            // Remove any non-numeric characters using a regular expression
-            this.value = this.value.replace(/[^0-9]/g, "");
-        });
-
-
-        const cvvField = document.getElementById("cvv");
-
-        // Add an input event listener to the text field
-        cvvField.addEventListener("input", function () {
-            // Remove any non-numeric characters using a regular expression
-            this.value = this.value.replace(/[^0-9]/g, "");
-        });
-{% comment %} 
-    function validate(){
-        let cnumber = document.getElementById('cardNumber').value;
-        console.log(cnumber)
-        let cnumber1 = cnumber.length;
-        if (cnumber1 < 16){
-            alert("Credit Card Number Should be of 16 Digits");
-        }   
-    }      {% endcomment %}
-</script>
+        const numericField = document.getElementById("cardNumber");
+        if (numericField) {
+            numericField.addEventListener("input", function () {
+                let value = this.value.replace(/[^0-9]/g, "");
+                let formatted = value.match(/.{1,4}/g);
+                this.value = formatted ? formatted.join(" ") : value;
+            });
+        }
+    </script>
 </body>
 </html>
 

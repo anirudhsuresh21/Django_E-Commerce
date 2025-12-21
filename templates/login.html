@@ -2,7 +2,7 @@
 {% block title %}Login{% endblock title %} 
 {% block content %}
 
-<div class="card bg-light p-5">
+<div class="card bg-light p-5" style="max-width: 500px; margin: 40px auto;">
 
   {% for message in messages %}
 
@@ -13,29 +13,31 @@
   {% endfor %}
 
   
-  <h3 class="text-dark">Login</h3>
+  <h3 class="text-dark mb-4" style="font-weight: 700; text-align: center;">Welcome Back</h3>
+  <p style="text-align: center; color: var(--text-light); margin-bottom: 32px;">Sign in to your account</p>
 
   <form action="/auth/login/" method="post">
     {% csrf_token %}
-    <br />
 
-    <label for="email">Email</label>
+    <label for="email" style="font-weight: 600; color: var(--text-dark);">Email Address</label>
     <div class="form-group">
-      <input type="email" class="form-control p-2" id="email" name="email" required />
+      <input type="email" class="form-control p-3" id="email" name="email" placeholder="Enter your email" required />
     </div>
-    <label for="pass1">Password</label>
+    <label for="pass1" style="font-weight: 600; color: var(--text-dark);">Password</label>
     <div class="form-group">
-      <input type="password" class="form-control p-2" id="pass1" name="pass1" required />
+      <input type="password" class="form-control p-3" id="pass1" name="pass1" placeholder="Enter your password" required />
     </div>
    
     <br />
-    <button type="submit" class="btn btn-dark">Login</button>
+    <button type="submit" class="btn btn-dark w-100 p-3" style="font-weight: 600; font-size: 16px;">Sign In</button>
     <br>
-    <span> Forget Password? <a href="/auth/request-reset-email/">Reset</a></span>
     <br>
-    <br />
-    New User? <a href="/auth/signup/">Signup</a>
-    <br />
+    <div style="text-align: center;">
+      <span style="color: var(--text-light);">Forgot Password? <a href="/auth/request-reset-email/" style="color: var(--primary-color); font-weight: 600;">Reset</a></span>
+      <br>
+      <br />
+      <span style="color: var(--text-light);">New User? <a href="/auth/signup/" style="color: var(--primary-color); font-weight: 600;">Create Account</a></span>
+    </div>
   </form>
 </div>
 

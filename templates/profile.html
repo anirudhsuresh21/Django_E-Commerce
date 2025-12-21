@@ -1,60 +1,154 @@
 {% extends 'base.html' %}
-{% block title %}Profile Page{% endblock title %}
+{% block title %}My Profile{% endblock title %}
 {% block body %}
-<section id="portfolio" class="portfolio">
+<section id="portfolio" class="portfolio section-bg" style="padding: 60px 0;">
     <div class="container">
-<h1>My Profile</h1>
+        <div class="section-title">
+            <h2>Account</h2>
+            <h3>My <span>Profile</span></h3>
+            <p>View and manage your order history</p>
+        </div>
 
-<table class="table table-info table-striped">
-    <thead>
-      <tr>
-        <th scope="col">Order ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Products</th>
-        <th scope="col">Amount Paid</th>
-        <th scope="col">Payment Status</th>
-        <th scope="col">Address</th>
-        <th scope="col">Phone Number</th>
-        <th scope="col">Delivery Status</th>
-        <th scope="col">Delivered</th>
-        <th scope="col">Date</th>
-      </tr>
-    </thead>
-    <tbody>
+        <div class="profile-header mb-5">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="profile-info-card">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-details">
+                            <h4>Welcome, {{user.email}}</h4>
+                            <p class="text-muted"><i class="fas fa-envelope me-2"></i>{{user.email}}</p>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    <span>{{items|length}} Orders</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Member Since {{user.date_joined|date:"M Y"}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        {% for i  in items %}
-
-        <tr>
-            <th scope="row">{{i.oid}} </th>
-            <td> {{i.name}}</td>
-            <td>{{i.items_json}} </td>
-            <td>{{i.amount}} </td>
-            <td> {{i.paymentstatus}}</td>
-            <td> {{i.address1}}</td>
-            <td> {{i.phone}}</td>
-
-            <td> {{i.update_desc}}</td>
-
-
-       
-            {% if i.delivered %}
-            <td><i class="fa-solid fa-circle-check"></i> Delivered</td>
-            {% else %}
-            <td> <i class="fa-solid fa-truck"></i> Not Delivered</td>
-            {% endif %}
-
-
-            <td> {{i.timestamp}}</td>
+        <div class="orders-section">
+            <h4 class="section-subtitle mb-4">
+                <i class="fas fa-shopping-cart me-2"></i>Order History
+            </h4>
             
-  
-          
-        
-        {% endfor %}
-
-
-
-    </tbody>
-</table>
+            {% if items %}
+            <div class="row">
+                {% for i in items %}
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-id">
+                                <span class="label">Order ID:</span>
+                                <span class="value">#{{i.oid}}</span>
+                            </div>
+                            <div class="order-status">
+                                {% if i.delivered %}
+                                <span class="badge badge-success">
+                                    <i class="fas fa-check-circle"></i> Delivered
+                                </span>
+                                {% else %}
+                                <span class="badge badge-warning">
+                                    <i class="fas fa-truck"></i> In Transit
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="order-body">
+                            <div class="order-detail-row">
+                                <div class="detail-item">
+                                    <i class="fas fa-user"></i>
+                                    <div>
+                                        <span class="detail-label">Customer Name</span>
+                                        <span class="detail-value">{{i.name}}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <div>
+                                        <span class="detail-label">Order Date</span>
+                                        <span class="detail-value">{{i.timestamp|date:"M d, Y"}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-detail-row">
+                                <div class="detail-item full-width">
+                                    <i class="fas fa-box"></i>
+                                    <div>
+                                        <span class="detail-label">Products</span>
+                                        <span class="detail-value products-list">{{i.items_json}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-detail-row">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <span class="detail-label">Delivery Address</span>
+                                        <span class="detail-value">{{i.address1}}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-phone"></i>
+                                    <div>
+                                        <span class="detail-label">Contact</span>
+                                        <span class="detail-value">{{i.phone}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-footer">
+                                <div class="payment-info">
+                                    <span class="payment-label">Payment Status:</span>
+                                    {% if i.paymentstatus == "SUCCESS" %}
+                                    <span class="payment-status success">
+                                        <i class="fas fa-check-circle"></i> {{i.paymentstatus}}
+                                    </span>
+                                    {% else %}
+                                    <span class="payment-status pending">
+                                        <i class="fas fa-clock"></i> {{i.paymentstatus}}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div class="order-amount">
+                                    <span class="amount-label">Total Amount</span>
+                                    <span class="amount-value">₹{{i.amount}}</span>
+                                </div>
+                            </div>
+                            
+                            {% if i.update_desc %}
+                            <div class="order-update">
+                                <i class="fas fa-info-circle"></i>
+                                <span>{{i.update_desc}}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-orders">
+                <i class="fas fa-shopping-bag"></i>
+                <h5>No Orders Yet</h5>
+                <p>Start shopping to see your orders here</p>
+                <a href="/" class="btn btn-primary mt-3">
+                    <i class="fas fa-shopping-cart me-2"></i>Start Shopping
+                </a>
+            </div>
+            {% endif %}
+        </div>
     </div>
 </section>
 {% endblock body %}

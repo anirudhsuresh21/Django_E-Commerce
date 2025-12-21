@@ -5,11 +5,14 @@
 {% endblock content %}
 {% block body %}
 <br>
+<section class="section-bg" style="padding: 60px 0;">
 <div class="section-title">
-  <h2>Contact Us</h2>        
+  <h2>Contact Us</h2>
+  <h3>Get in <span>Touch</span></h3>
+  <p>We'd love to hear from you</p>
 </div>
 
-<div class="container mt-2">
+<div class="container mt-4">
     {% for message in messages %}
 
     <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
@@ -19,63 +22,68 @@
     {% endfor %}
 <div class="row">
 
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
       
-
+      <div class="card bg-light p-5" style="border-radius: 20px; box-shadow: var(--shadow-xl);">
         <form action="/contact" method="post">
           {% csrf_token %}
           <br />
       
-          <label for="name">Full Name</label>
+          <label for="name" style="font-weight: 600; color: var(--text-dark);">Full Name</label>
           <div class="form-group">
-            <input type="text" class="form-control p-2" id="name" name="name" required />
+            <input type="text" class="form-control p-3" id="name" name="name" placeholder="Enter your full name" required />
           </div>
           <br>
-          <label for="email">Email</label>
+          <label for="email" style="font-weight: 600; color: var(--text-dark);">Email Address</label>
           <div class="form-group">
             <input
               type="email"
-              class="form-control p-2"
+              class="form-control p-3"
               id="email"
               name="email"
+              placeholder="Enter your email"
               value="{{user.email}}"
               required
             />
           </div>
           <br>
-          <label for="pass1">How Can I Help You?</label>
+          <label for="pass1" style="font-weight: 600; color: var(--text-dark);">How Can We Help You?</label>
           <div class="form-group">
             <textarea
               type="text"
-              class="form-control p-2"
+              class="form-control p-3"
               id="desc"
               name="desc"
+              rows="5"
+              placeholder="Tell us how we can help you..."
               required> </textarea>
           </div>
           <br>
-          <label for="pnumber">Phone Number</label>
+          <label for="pnumber" style="font-weight: 600; color: var(--text-dark);">Phone Number</label>
           <div class="form-group">
             <input
               type="number"
-              class="form-control p-2"
+              class="form-control p-3"
               id="pnumber"
               name="pnumber"
+              placeholder="Enter your phone number"
               required
             />
           </div>
           <br />
-          <button type="submit" class="btn btn-dark">Submit</button>
-          <br />
+          <button type="submit" class="btn btn-dark w-100 p-3" style="font-weight: 600; font-size: 16px;">Send Message</button>
           <br />
           <br />
         </form>
+      </div>
 
 
 
     </div>
-    <div class="col-md-4"></div>
+    <div class="col-md-2"></div>
 </div>
+</section>
 
 
 

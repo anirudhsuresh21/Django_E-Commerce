@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 <!--extend method is used to call a previously bulit html page to this page this method
 ensures the reusability of the code-->
-{% block title %}Home{% endblock title %} 
+{% block title %}Sign Up{% endblock title %} 
 {% block content %}
 
-<div class="card bg-light p-5 ">
+<div class="card bg-light p-5" style="max-width: 500px; margin: 40px auto;">
     <!--card is a bootstrap class for creating card like boxes -->
     <!--for showing warning message if the password is not same or the email already exists-->
     {% for message in messages %}
@@ -17,30 +17,33 @@ ensures the reusability of the code-->
 
 
 
-    <h3 class="text-dark">Sign Up</h3>
+    <h3 class="text-dark mb-4" style="font-weight: 700; text-align: center;">Create Account</h3>
+    <p style="text-align: center; color: var(--text-light); margin-bottom: 32px;">Join us and start shopping</p>
 
 <form action="/auth/signup/" method="post">
     <!--post method is used to send the data to the backend-->
     {% csrf_token %}
     <!--csrf token is used by django to maintain the credibility if the data in the form-->
-    <br/>
-    <label for="email">Email</label>
+    
+    <label for="email" style="font-weight: 600; color: var(--text-dark);">Email Address</label>
     <div class="form-group">
-      <input type="email" class="form-control p-2" id="email" name="email" required />
+      <input type="email" class="form-control p-3" id="email" name="email" placeholder="Enter your email" required />
     </div>
-    <label for="pass1">Password</label>
+    <label for="pass1" style="font-weight: 600; color: var(--text-dark);">Password</label>
     <div class="form-group">
-      <input type="password" class="form-control p-2" id="pass1" name="pass1" required />
+      <input type="password" class="form-control p-3" id="pass1" name="pass1" placeholder="Create a password" required />
     </div>
-    <label for="pass2">Confirm Password</label>
+    <label for="pass2" style="font-weight: 600; color: var(--text-dark);">Confirm Password</label>
     <div class="form-group">
-      <input type="password" class="form-control p-2" id="pass2" name="pass2" required />
+      <input type="password" class="form-control p-3" id="pass2" name="pass2" placeholder="Confirm your password" required />
     </div>
     <br />
-    <button type="submit" class="btn btn-dark" onclick="validatePassword()">SignIn</button>
-    <br >
-    Already User? <a href="/auth/login/">Login</a>
-    <br />
+    <button type="submit" class="btn btn-dark w-100 p-3" onclick="validatePassword()" style="font-weight: 600; font-size: 16px;">Create Account</button>
+    <br>
+    <br>
+    <div style="text-align: center;">
+      <span style="color: var(--text-light);">Already have an account? <a href="/auth/login/" style="color: var(--primary-color); font-weight: 600;">Sign In</a></span>
+    </div>
   </form>
 </div>
 {% endblock content %}

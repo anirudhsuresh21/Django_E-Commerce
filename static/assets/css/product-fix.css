@@ -1,0 +1,26 @@
+/* Product Card Button and Price Visibility Fix */
+.btn-add-cart.cart {
+  background: linear-gradient(135deg, #6366f1, #ec4899) !important;
+  color: white !important;
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 12px 20px !important;
+}
+
+.btn-add-cart.cart:hover {
+  color: white !important;
+  opacity: 0.9;
+}
+
+.product-price {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: #6366f1 !important;
+  margin: 0 !important;
+}
+
+.price-label {
+  font-size: 12px !important;
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+}
